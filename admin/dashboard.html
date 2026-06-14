@@ -1,0 +1,1276 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin — Infinity Store</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/shared.css">
+  <style>
+    /* ── ADMIN LAYOUT ── */
+    .admin-wrap { display: flex; min-height: 100vh; }
+
+    /* Sidebar */
+    .admin-sidebar {
+      width: 240px;
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      position: fixed;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      z-index: 100;
+      transition: transform 0.25s;
+    }
+    .sidebar-logo {
+      padding: 22px 20px 18px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .sidebar-logo .logo-text { font-size: 15px; }
+    .sidebar-admin-badge {
+      display: inline-block;
+      padding: 2px 8px;
+      background: rgba(240,192,64,0.12);
+      border: 1px solid rgba(240,192,64,0.2);
+      border-radius: 999px;
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--accent);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-top: 3px;
+    }
+    .sidebar-nav {
+      flex: 1;
+      padding: 16px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      overflow-y: auto;
+    }
+    .sidebar-section-label {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--text-faint);
+      padding: 12px 8px 6px;
+    }
+    .sidebar-link {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 12px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-dim);
+      text-decoration: none;
+      cursor: pointer;
+      transition: all 0.18s;
+      border: none;
+      background: none;
+      width: 100%;
+      text-align: left;
+    }
+    .sidebar-link:hover { background: var(--surface2); color: var(--text); }
+    .sidebar-link.active { background: rgba(240,192,64,0.1); color: var(--accent); font-weight: 600; }
+    .sidebar-link i { width: 18px; text-align: center; font-size: 14px; }
+    .sidebar-link .badge {
+      margin-left: auto;
+      background: var(--accent);
+      color: #0a0a0f;
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 999px;
+      min-width: 20px;
+      text-align: center;
+    }
+    .sidebar-bottom {
+      padding: 16px 12px;
+      border-top: 1px solid var(--border);
+    }
+    .sidebar-user {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: 10px;
+      background: var(--surface2);
+      margin-bottom: 8px;
+    }
+    .sidebar-avatar {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: var(--accent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Syne', sans-serif;
+      font-size: 14px;
+      font-weight: 800;
+      color: #0a0a0f;
+    }
+    .sidebar-user-name { font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 700; color: var(--text); }
+    .sidebar-user-role { font-size: 11px; color: var(--text-faint); }
+
+    /* Main */
+    .admin-main {
+      margin-left: 240px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+    .admin-topbar {
+      position: sticky;
+      top: 0;
+      background: rgba(10,10,15,0.9);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 32px;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      z-index: 50;
+    }
+    .topbar-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text);
+    }
+    .topbar-actions { margin-left: auto; display: flex; gap: 8px; align-items: center; }
+    .topbar-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 7px 16px;
+      border-radius: 999px;
+      font-family: 'Syne', sans-serif;
+      font-size: 12px;
+      font-weight: 700;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .topbar-btn-primary { background: var(--accent); color: #0a0a0f; }
+    .topbar-btn-primary:hover { background: #ffd060; }
+    .topbar-btn-ghost { background: var(--surface); border: 1px solid var(--border); color: var(--text-dim); }
+    .topbar-btn-ghost:hover { color: var(--text); border-color: rgba(240,192,64,0.3); }
+
+    .admin-content { padding: 32px; flex: 1; }
+
+    /* ── TABS ── */
+    .admin-tabs {
+      display: flex;
+      gap: 4px;
+      margin-bottom: 28px;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 0;
+    }
+    .admin-tab {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 18px;
+      font-family: 'Syne', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-dim);
+      cursor: pointer;
+      border: none;
+      background: none;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -1px;
+      transition: all 0.18s;
+    }
+    .admin-tab:hover { color: var(--text); }
+    .admin-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+    .tab-panel { display: none; animation: fadeIn 0.2s ease; }
+    .tab-panel.active { display: block; }
+    @keyframes fadeIn { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:translateY(0); } }
+
+    /* ── STAT CARDS ── */
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-bottom: 32px;
+    }
+    .stat-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px 22px;
+    }
+    .stat-label { font-size: 11px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text-faint); margin-bottom: 10px; }
+    .stat-val { font-family: 'Syne', sans-serif; font-size: 32px; font-weight: 800; color: var(--text); line-height: 1; margin-bottom: 6px; }
+    .stat-val span { color: var(--accent); }
+    .stat-delta { font-size: 12px; color: var(--green); display: flex; align-items: center; gap: 4px; }
+    .stat-delta.down { color: var(--red); }
+
+    /* ── TOOLBAR ── */
+    .section-toolbar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+    .toolbar-search {
+      flex: 1;
+      min-width: 180px;
+      position: relative;
+    }
+    .toolbar-search i { position:absolute; left:12px; top:50%; transform:translateY(-50%); color:var(--text-faint); font-size:12px; pointer-events:none; }
+    .toolbar-search input {
+      width: 100%;
+      height: 38px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 0 14px 0 36px;
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 13px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .toolbar-search input::placeholder { color: var(--text-faint); }
+    .toolbar-search input:focus { border-color: rgba(240,192,64,0.4); }
+
+    .toolbar-select {
+      height: 38px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 0 16px;
+      color: var(--text-dim);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 12px;
+      outline: none;
+      cursor: pointer;
+    }
+
+    /* ── DATA TABLE ── */
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+    .data-table thead tr {
+      background: var(--surface2);
+      border-bottom: 1px solid var(--border);
+    }
+    .data-table th {
+      padding: 12px 16px;
+      text-align: left;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--text-faint);
+    }
+    .data-table td {
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--border);
+      font-size: 13px;
+      color: var(--text-dim);
+      vertical-align: middle;
+    }
+    .data-table tr:last-child td { border-bottom: none; }
+    .data-table tr:hover td { background: rgba(240,192,64,0.02); }
+    .data-table .td-name { font-weight: 600; color: var(--text); max-width: 200px; }
+    .data-table .td-price { font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700; color: var(--accent); }
+
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 3px 10px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+    .pill-ok  { background: rgba(48,208,144,0.12); color: var(--green); border:1px solid rgba(48,208,144,0.2); }
+    .pill-warn { background: rgba(240,144,48,0.12); color: var(--orange); border:1px solid rgba(240,144,48,0.2); }
+    .pill-err { background: rgba(240,80,96,0.12); color: var(--red); border:1px solid rgba(240,80,96,0.2); }
+    .pill-new { background: rgba(240,192,64,0.12); color: var(--accent); border:1px solid rgba(240,192,64,0.2); }
+
+    .action-btns { display: flex; gap: 6px; }
+    .action-btn {
+      width: 30px;
+      height: 30px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--surface2);
+      color: var(--text-dim);
+      font-size: 12px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.18s;
+    }
+    .action-btn:hover { border-color: rgba(240,192,64,0.3); color: var(--accent); }
+    .action-btn.del:hover { border-color: rgba(240,80,96,0.3); color: var(--red); }
+
+    /* ── MODAL FORM ── */
+    .modal-form-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--text);
+      padding: 24px 28px 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    /* ── IMAGE DROPZONE ── */
+    .img-dropzone {
+      border: 1.5px dashed var(--border);
+      border-radius: var(--radius-sm);
+      padding: 28px 16px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      background: var(--surface2);
+    }
+    .img-dropzone:hover, .img-dropzone.dragover {
+      border-color: rgba(240,192,64,0.4);
+      background: rgba(240,192,64,0.04);
+    }
+
+    /* ── UNE CHECKBOX ── */
+    #pUneCheck.checked {
+      background: var(--accent);
+      border-color: var(--accent);
+    }
+    #pUneCheck.checked::after {
+      content: '\f00c';
+      font-family: 'Font Awesome 6 Free';
+      font-weight: 900;
+    }
+    .modal-form-body { padding: 20px 28px 28px; }
+    .form-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .form-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
+
+    .submit-row {
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+      margin-top: 20px;
+    }
+
+    .btn-save {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 22px;
+      background: var(--accent);
+      color: #0a0a0f;
+      border: none;
+      border-radius: var(--radius-sm);
+      font-family: 'Syne', sans-serif;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-save:hover { background: #ffd060; }
+    .btn-cancel {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 22px;
+      background: var(--surface2);
+      color: var(--text-dim);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      font-family: 'Syne', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-cancel:hover { color: var(--text); }
+
+    /* ── EMPTY ── */
+    .empty-table {
+      padding: 48px 20px;
+      text-align: center;
+      color: var(--text-faint);
+    }
+    .empty-table i { font-size: 36px; margin-bottom: 12px; display: block; }
+    .empty-table p { font-size: 13px; }
+
+    /* ── CONFIRM MODAL ── */
+    .confirm-modal { max-width: 360px; padding: 28px; text-align: center; }
+    .confirm-icon { font-size: 40px; margin-bottom: 12px; }
+    .confirm-title { font-family: 'Syne', sans-serif; font-size: 17px; font-weight: 800; color: var(--text); margin-bottom: 6px; }
+    .confirm-desc { font-size: 13px; color: var(--text-dim); margin-bottom: 20px; }
+    .confirm-btns { display: flex; gap: 10px; justify-content: center; }
+    .btn-danger { background: var(--red); color: #fff; border: none; border-radius: var(--radius-sm); padding: 10px 22px; font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 700; cursor: pointer; }
+
+    /* ── MOBILE ── */
+    .mobile-toggle {
+      display: none;
+      position: fixed;
+      bottom: 20px;
+      left: 20px;
+      width: 48px; height: 48px;
+      border-radius: 50%;
+      background: var(--accent);
+      border: none;
+      color: #0a0a0f;
+      font-size: 18px;
+      cursor: pointer;
+      z-index: 200;
+      box-shadow: 0 4px 16px rgba(240,192,64,0.4);
+    }
+    .sidebar-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.6);
+      z-index: 99;
+    }
+
+    @media (max-width: 1024px) {
+      .admin-sidebar { transform: translateX(-100%); }
+      .admin-sidebar.open { transform: translateX(0); }
+      .sidebar-overlay.open { display: block; }
+      .admin-main { margin-left: 0; }
+      .mobile-toggle { display: flex; align-items: center; justify-content: center; }
+      .stats-row { grid-template-columns: repeat(2,1fr); }
+      .form-grid-2, .form-grid-3 { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 640px) {
+      .admin-content { padding: 20px 16px; }
+      .stats-row { grid-template-columns: 1fr 1fr; gap: 10px; }
+      .admin-topbar { padding: 0 16px; }
+    }
+  </style>
+</head>
+<body>
+<div class="admin-wrap">
+
+  <!-- ══ SIDEBAR ══ -->
+  <div class="admin-sidebar" id="adminSidebar">
+    <div class="sidebar-logo">
+      <div class="logo-mark"><i class="fas fa-infinity"></i></div>
+      <div>
+        <div class="logo-text">Infinity Store</div>
+        <div class="sidebar-admin-badge">Admin</div>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="sidebar-section-label">Principal</div>
+      <button class="sidebar-link active" onclick="switchTab('dashboard', this)">
+        <i class="fas fa-chart-pie"></i> Tableau de bord
+      </button>
+
+      <div class="sidebar-section-label">Catalogue</div>
+      <button class="sidebar-link" onclick="switchTab('accessoires', this)">
+        <i class="fas fa-box"></i> Accessoires
+      </button>
+      <button class="sidebar-link" onclick="switchTab('reseau', this)">
+        <i class="fas fa-wifi"></i> Réseau
+      </button>
+
+      <div class="sidebar-section-label">Contenu</div>
+      <button class="sidebar-link" onclick="switchTab('videos', this)">
+        <i class="fas fa-play-circle"></i> Astuces / Vidéos
+      </button>
+
+      <div class="sidebar-section-label">Clients</div>
+      <button class="sidebar-link" onclick="switchTab('devis', this)">
+        <i class="fas fa-file-invoice"></i> Demandes de devis
+        <span class="badge" id="devisBadge">0</span>
+      </button>
+      <button class="sidebar-link" onclick="switchTab('messages', this)">
+        <i class="fas fa-envelope"></i> Messages
+        <span class="badge" id="msgBadge">0</span>
+      </button>
+
+      <div class="sidebar-section-label">Accès</div>
+      <button class="sidebar-link" onclick="window.open('../index.html','_blank')">
+        <i class="fas fa-external-link-alt"></i> Voir le site
+      </button>
+      <button class="sidebar-link" onclick="logout()">
+        <i class="fas fa-sign-out-alt"></i> Déconnexion
+      </button>
+    </nav>
+    <div class="sidebar-bottom">
+      <div class="sidebar-user">
+        <div class="sidebar-avatar">A</div>
+        <div>
+          <div class="sidebar-user-name">Admin</div>
+          <div class="sidebar-user-role">Infinity Store</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Overlay mobile -->
+  <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
+  <!-- ══ MAIN ══ -->
+  <div class="admin-main">
+    <!-- Topbar -->
+    <div class="admin-topbar">
+      <div class="topbar-title" id="topbarTitle">Tableau de bord</div>
+      <div class="topbar-actions" id="topbarActions">
+        <!-- Dynamique -->
+      </div>
+    </div>
+
+    <!-- Content -->
+    <div class="admin-content">
+
+      <!-- ═══ DASHBOARD ═══ -->
+      <div class="tab-panel active" id="tab-dashboard">
+        <div class="stats-row" id="statsRow">
+          <div class="stat-card"><div class="stat-label">Accessoires</div><div class="stat-val" id="sAcc">—</div><div class="stat-delta"><i class="fas fa-box"></i> produits</div></div>
+          <div class="stat-card"><div class="stat-label">Produits réseau</div><div class="stat-val" id="sRes">—</div><div class="stat-delta"><i class="fas fa-wifi"></i> produits</div></div>
+          <div class="stat-card"><div class="stat-label">Vidéos / Astuces</div><div class="stat-val" id="sVid">—</div><div class="stat-delta"><i class="fas fa-play"></i> publiées</div></div>
+          <div class="stat-card"><div class="stat-label">Devis en attente</div><div class="stat-val" id="sDev"><span>—</span></div><div class="stat-delta"><i class="fas fa-clock"></i> non traités</div></div>
+        </div>
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:32px;text-align:center;">
+          <i class="fas fa-rocket" style="font-size:36px;color:var(--accent);margin-bottom:12px;display:block;"></i>
+          <div style="font-family:'Syne',sans-serif;font-size:18px;font-weight:800;color:var(--text);margin-bottom:8px;">Bienvenue dans l'admin Infinity Store</div>
+          <p style="font-size:13px;color:var(--text-dim);max-width:480px;margin:0 auto;">Utilisez le menu à gauche pour gérer vos produits, vidéos, devis et messages clients.</p>
+        </div>
+      </div>
+
+      <!-- ═══ ACCESSOIRES ═══ -->
+      <div class="tab-panel" id="tab-accessoires">
+        <div class="section-toolbar">
+          <div class="toolbar-search"><i class="fas fa-search"></i><input type="text" placeholder="Rechercher…" oninput="filterTable('accTable', this.value)"></div>
+          <select class="toolbar-select" onchange="filterTableCat('accTable', this.value, 'categorie')" id="accCatFilter">
+            <option value="">Toutes catégories</option>
+          </select>
+        </div>
+        <table class="data-table" id="accTable">
+          <thead><tr>
+            <th>Nom</th><th>Catégorie</th><th>Prix</th><th>Statut</th><th>Actions</th>
+          </tr></thead>
+          <tbody id="accTbody"><tr><td colspan="5"><div class="empty-table"><div class="spinner"></div></div></td></tr></tbody>
+        </table>
+      </div>
+
+      <!-- ═══ RÉSEAU ═══ -->
+      <div class="tab-panel" id="tab-reseau">
+        <div class="section-toolbar">
+          <div class="toolbar-search"><i class="fas fa-search"></i><input type="text" placeholder="Rechercher…" oninput="filterTable('resTable', this.value)"></div>
+          <select class="toolbar-select" onchange="filterTableCat('resTable', this.value, 'categorie')">
+            <option value="">Toutes catégories</option>
+            <option value="routeur">Routeurs</option>
+            <option value="switch">Switches</option>
+            <option value="ap">Points d'accès</option>
+            <option value="cable">Câbles</option>
+            <option value="autre">Autres</option>
+          </select>
+        </div>
+        <table class="data-table" id="resTable">
+          <thead><tr>
+            <th>Nom</th><th>Catégorie</th><th>Prix</th><th>Statut</th><th>Actions</th>
+          </tr></thead>
+          <tbody id="resTbody"><tr><td colspan="5"><div class="empty-table"><div class="spinner"></div></div></td></tr></tbody>
+        </table>
+      </div>
+
+      <!-- ═══ VIDÉOS ═══ -->
+      <div class="tab-panel" id="tab-videos">
+        <div class="section-toolbar">
+          <div class="toolbar-search"><i class="fas fa-search"></i><input type="text" placeholder="Rechercher…" oninput="filterTable('vidTable', this.value)"></div>
+          <select class="toolbar-select" onchange="filterTableCat('vidTable', this.value, 'categorie')">
+            <option value="">Toutes catégories</option>
+            <option value="tutoriel">Tutoriels</option>
+            <option value="astuce">Astuces</option>
+            <option value="conseil">Conseils</option>
+            <option value="reseau">Réseau</option>
+          </select>
+        </div>
+        <table class="data-table" id="vidTable">
+          <thead><tr>
+            <th>Titre</th><th>Catégorie</th><th>Vues</th><th>Date</th><th>Actions</th>
+          </tr></thead>
+          <tbody id="vidTbody"><tr><td colspan="5"><div class="empty-table"><div class="spinner"></div></div></td></tr></tbody>
+        </table>
+      </div>
+
+      <!-- ═══ DEVIS ═══ -->
+      <div class="tab-panel" id="tab-devis">
+        <table class="data-table" id="devTable">
+          <thead><tr>
+            <th>Client</th><th>Téléphone</th><th>Produits</th><th>Date</th><th>Statut</th><th>Actions</th>
+          </tr></thead>
+          <tbody id="devTbody"><tr><td colspan="6"><div class="empty-table"><div class="spinner"></div></div></td></tr></tbody>
+        </table>
+      </div>
+
+      <!-- ═══ MESSAGES ═══ -->
+      <div class="tab-panel" id="tab-messages">
+        <table class="data-table" id="msgTable">
+          <thead><tr>
+            <th>Nom</th><th>Téléphone</th><th>Sujet</th><th>Message</th><th>Date</th><th>Actions</th>
+          </tr></thead>
+          <tbody id="msgTbody"><tr><td colspan="6"><div class="empty-table"><div class="spinner"></div></div></td></tr></tbody>
+        </table>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+<!-- ══ MODAL: Accessoire / Réseau Form ══ -->
+<div class="modal-overlay" id="prodModal" onclick="closeProdModalOnOutside(event)">
+  <div class="modal-box" style="max-width:600px;">
+    <div class="modal-form-title">
+      <span id="prodModalTitle">Ajouter un produit</span>
+      <button onclick="closeProdModal()" style="background:none;border:none;color:var(--text-dim);font-size:18px;cursor:pointer;"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="modal-form-body">
+      <input type="hidden" id="pId">
+      <input type="hidden" id="pTable">
+      <div id="pError" class="error-msg" style="display:none;"></div>
+      <div class="form-group"><label class="form-label">Nom *</label><input type="text" id="pNom" class="form-input" placeholder="Nom du produit"></div>
+      <div class="form-grid-2">
+        <div class="form-group" style="margin-bottom:0;"><label class="form-label">Catégorie *</label><input type="text" id="pCat" class="form-input" placeholder="Ex: Laptop, Routeur…"></div>
+        <div class="form-group" style="margin-bottom:0;"><label class="form-label">Prix (Ar)</label><input type="number" id="pPrix" class="form-input" placeholder="0"></div>
+      </div>
+      <div class="form-grid-2" style="margin-top:14px;">
+        <div class="form-group" style="margin-bottom:0;"><label class="form-label">Marque</label><input type="text" id="pMarque" class="form-input" placeholder="Ex: Logitech, MikroTik"></div>
+        <div class="form-group" style="margin-bottom:0;">
+          <label class="form-label">Statut</label>
+          <select id="pStatut" class="form-select">
+            <option value="disponible">Disponible</option>
+            <option value="commande">Sur commande</option>
+            <option value="rupture">Rupture de stock</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group" style="margin-top:14px;"><label class="form-label">Description / Spécifications</label><textarea id="pDesc" class="form-textarea" placeholder="Ex: Intel Core i7 · 16GB RAM · SSD 512GB…" style="min-height:90px;"></textarea></div>
+
+      <!-- Prix ancien + badge -->
+      <div class="form-grid-2">
+        <div class="form-group" style="margin-bottom:0;">
+          <label class="form-label">Prix ancien (Ar) <span style="color:var(--text-faint);font-size:10px;">pour afficher le discount</span></label>
+          <input type="number" id="pPrixOld" class="form-input" placeholder="0 si pas de promo">
+        </div>
+        <div class="form-group" style="margin-bottom:0;">
+          <label class="form-label">Badge</label>
+          <select id="pBadge" class="form-select">
+            <option value="">Aucun</option>
+            <option value="new">Nouveau</option>
+            <option value="hot">Populaire</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- À la une -->
+      <div class="form-group" style="margin-top:14px;">
+        <label style="display:flex;align-items:center;gap:12px;cursor:pointer;padding:14px 16px;background:rgba(240,192,64,0.05);border:1px solid rgba(240,192,64,0.15);border-radius:var(--radius-sm);">
+          <input type="checkbox" id="pUne" style="display:none;">
+          <div id="pUneCheck" style="width:20px;height:20px;border-radius:5px;border:2px solid var(--border);background:var(--surface2);display:flex;align-items:center;justify-content:center;font-size:11px;color:#0a0a0f;transition:all 0.18s;flex-shrink:0;" onclick="toggleUne()"></div>
+          <div>
+            <div style="font-family:'Syne',sans-serif;font-size:13px;font-weight:700;color:var(--text);">Afficher en page d'accueil</div>
+            <div style="font-size:11px;color:var(--text-dim);">Ce produit apparaîtra dans "Produits à la une"</div>
+          </div>
+          <i class="fas fa-star" style="margin-left:auto;color:var(--accent);font-size:16px;"></i>
+        </label>
+      </div>
+
+      <!-- Image upload -->
+      <div class="form-group">
+        <label class="form-label">Image du produit</label>
+        <!-- Preview -->
+        <div id="pImgPreview" style="display:none;margin-bottom:10px;position:relative;width:100%;max-width:200px;">
+          <img id="pImgPreviewImg" style="width:100%;border-radius:10px;border:1px solid var(--border);display:block;" alt="">
+          <button onclick="removeImage()" style="position:absolute;top:6px;right:6px;width:24px;height:24px;border-radius:50%;background:rgba(0,0,0,0.7);border:none;color:#fff;font-size:11px;cursor:pointer;display:flex;align-items:center;justify-content:center;"><i class="fas fa-times"></i></button>
+        </div>
+        <!-- Drop zone -->
+        <div id="pImgDropzone" class="img-dropzone" onclick="document.getElementById('pImgFile').click()" ondragover="onDragOver(event)" ondragleave="onDragLeave(event)" ondrop="onDrop(event)">
+          <i class="fas fa-cloud-upload-alt" style="font-size:28px;color:var(--accent);margin-bottom:10px;"></i>
+          <div style="font-family:'Syne',sans-serif;font-size:13px;font-weight:600;color:var(--text);">Cliquer ou glisser une image</div>
+          <div style="font-size:11px;color:var(--text-faint);margin-top:4px;">JPG, PNG, WEBP — max 5 MB</div>
+        </div>
+        <input type="file" id="pImgFile" accept="image/*" style="display:none;" onchange="onFileChange(event)">
+        <!-- URL fallback -->
+        <div style="display:flex;align-items:center;gap:8px;margin-top:8px;">
+          <div style="flex:1;height:1px;background:var(--border);"></div>
+          <span style="font-size:11px;color:var(--text-faint);">ou URL directe</span>
+          <div style="flex:1;height:1px;background:var(--border);"></div>
+        </div>
+        <input type="url" id="pImg" class="form-input" placeholder="https://..." style="margin-top:8px;" oninput="onUrlInput(this.value)">
+      </div>
+
+      <div id="pUploadProgress" style="display:none;margin-bottom:12px;">
+        <div style="font-size:12px;color:var(--text-dim);margin-bottom:6px;"><i class="fas fa-spinner fa-spin" style="margin-right:4px;"></i> Upload en cours…</div>
+        <div style="height:4px;background:var(--surface2);border-radius:2px;overflow:hidden;"><div id="pProgressBar" style="height:100%;background:var(--accent);width:0%;transition:width 0.3s;"></div></div>
+      </div>
+
+      <div class="submit-row">
+        <button class="btn-cancel" onclick="closeProdModal()">Annuler</button>
+        <button class="btn-save" id="pSaveBtn" onclick="saveProd()"><i class="fas fa-save"></i> Enregistrer</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MODAL: Vidéo Form ══ -->
+<div class="modal-overlay" id="vidModal" onclick="closeVidModalOnOutside(event)">
+  <div class="modal-box" style="max-width:600px;">
+    <div class="modal-form-title">
+      <span id="vidModalTitle">Ajouter une vidéo</span>
+      <button onclick="closeVidModal()" style="background:none;border:none;color:var(--text-dim);font-size:18px;cursor:pointer;"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="modal-form-body">
+      <input type="hidden" id="vId">
+      <div id="vError" class="error-msg" style="display:none;"></div>
+      <div class="form-group"><label class="form-label">Titre *</label><input type="text" id="vTitre" class="form-input" placeholder="Titre de la vidéo"></div>
+      <div class="form-group"><label class="form-label">Lien YouTube *</label>
+        <div class="input-wrap"><i class="fab fa-youtube input-icon" style="color:#ff4444;"></i><input type="url" id="vLien" class="form-input has-icon" placeholder="https://www.youtube.com/watch?v=…" oninput="previewThumb()"></div>
+      </div>
+      <!-- Thumb preview -->
+      <div id="thumbPreview" style="display:none;margin-bottom:16px;">
+        <div style="font-size:11px;color:var(--text-faint);margin-bottom:6px;">Aperçu miniature</div>
+        <img id="thumbImg" style="width:100%;max-width:320px;border-radius:10px;border:1px solid var(--border);" alt="">
+      </div>
+      <div class="form-grid-2">
+        <div class="form-group" style="margin-bottom:0;">
+          <label class="form-label">Catégorie *</label>
+          <select id="vCat" class="form-select">
+            <option value="tutoriel">Tutoriel</option>
+            <option value="astuce">Astuce</option>
+            <option value="conseil">Conseil</option>
+            <option value="reseau">Réseau</option>
+          </select>
+        </div>
+        <div class="form-group" style="margin-bottom:0;"><label class="form-label">Durée (ex: 10:32)</label><input type="text" id="vDuree" class="form-input" placeholder="mm:ss"></div>
+      </div>
+      <div class="form-group" style="margin-top:14px;"><label class="form-label">Description</label><textarea id="vDesc" class="form-textarea" placeholder="Description de la vidéo…" style="min-height:90px;"></textarea></div>
+      <div class="form-group"><label class="form-label">Mots-clés (séparés par virgule)</label><input type="text" id="vMots" class="form-input" placeholder="mikrotik, réseau, configuration…"></div>
+      <div class="submit-row">
+        <button class="btn-cancel" onclick="closeVidModal()">Annuler</button>
+        <button class="btn-save" onclick="saveVid()"><i class="fas fa-save"></i> Enregistrer</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ CONFIRM DELETE ══ -->
+<div class="modal-overlay" id="confirmModal" onclick="closeConfirm(event)">
+  <div class="modal-box" style="max-width:340px;">
+    <div class="confirm-modal">
+      <div class="confirm-icon">🗑️</div>
+      <div class="confirm-title">Supprimer ?</div>
+      <div class="confirm-desc" id="confirmDesc">Cette action est irréversible.</div>
+      <div class="confirm-btns">
+        <button class="btn-cancel" onclick="document.getElementById('confirmModal').classList.remove('open')">Annuler</button>
+        <button class="btn-danger" id="confirmOkBtn">Supprimer</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<button class="mobile-toggle" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+
+<script src="../assets/shared.js"></script>
+<script>
+/* ══ AUTH ══ */
+requireAdmin();
+
+/* ══ STATE ══ */
+let accData  = [];
+let resData  = [];
+let vidData  = [];
+let devData  = [];
+let msgData  = [];
+let currentTab = 'dashboard';
+
+/* ══ SIDEBAR MOBILE ══ */
+function toggleSidebar() {
+  document.getElementById('adminSidebar').classList.toggle('open');
+  document.getElementById('sidebarOverlay').classList.toggle('open');
+}
+function closeSidebar() {
+  document.getElementById('adminSidebar').classList.remove('open');
+  document.getElementById('sidebarOverlay').classList.remove('open');
+}
+
+/* ══ TABS ══ */
+function switchTab(tab, el) {
+  currentTab = tab;
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.sidebar-link').forEach(l => l.classList.remove('active'));
+  document.getElementById('tab-' + tab).classList.add('active');
+  if (el) el.classList.add('active');
+
+  const titles = { dashboard:'Tableau de bord', accessoires:'Accessoires', reseau:'Équipements Réseau', videos:'Astuces & Vidéos', devis:'Demandes de devis', messages:'Messages' };
+  document.getElementById('topbarTitle').textContent = titles[tab] || tab;
+  setTopbarActions(tab);
+  closeSidebar();
+  loadTabData(tab);
+}
+
+function setTopbarActions(tab) {
+  const el = document.getElementById('topbarActions');
+  if (tab === 'accessoires') {
+    el.innerHTML = `<button class="topbar-btn topbar-btn-primary" onclick="openProdModal('accessoires')"><i class="fas fa-plus"></i> Ajouter un accessoire</button>`;
+  } else if (tab === 'reseau') {
+    el.innerHTML = `<button class="topbar-btn topbar-btn-primary" onclick="openProdModal('produits_reseau')"><i class="fas fa-plus"></i> Ajouter un produit</button>`;
+  } else if (tab === 'videos') {
+    el.innerHTML = `<button class="topbar-btn topbar-btn-primary" onclick="openVidModal()"><i class="fas fa-plus"></i> Ajouter une vidéo</button>`;
+  } else {
+    el.innerHTML = `<a class="topbar-btn topbar-btn-ghost" href="../index.html" target="_blank"><i class="fas fa-external-link-alt"></i> Voir le site</a>`;
+  }
+}
+
+/* ══ LOAD DATA ══ */
+async function loadTabData(tab) {
+  if (tab === 'dashboard') { await loadDashboard(); return; }
+  if (tab === 'accessoires') { accData = await loadTable('accessoires'); renderAccTable(); return; }
+  if (tab === 'reseau')      { resData = await loadTable('produits_reseau'); renderResTable(); return; }
+  if (tab === 'videos')      { vidData = await loadTable('videos'); renderVidTable(); return; }
+  if (tab === 'devis')       { devData = await loadTable('devis'); renderDevTable(); return; }
+  if (tab === 'messages')    { msgData = await loadTable('messages'); renderMsgTable(); return; }
+}
+
+async function loadTable(table) {
+  try {
+    return await sbFetch(`${table}?order=created_at.desc&select=*`) || [];
+  } catch(e) { return []; }
+}
+
+async function loadDashboard() {
+  try {
+    const [acc, res, vid, dev, msg] = await Promise.all([
+      loadTable('accessoires'), loadTable('produits_reseau'), loadTable('videos'),
+      loadTable('devis'), loadTable('messages')
+    ]);
+    accData = acc; resData = res; vidData = vid; devData = dev; msgData = msg;
+    document.getElementById('sAcc').textContent = acc.length;
+    document.getElementById('sRes').textContent = res.length;
+    document.getElementById('sVid').textContent = vid.length;
+    const pending = dev.filter(d => d.statut === 'nouveau').length;
+    document.getElementById('sDev').innerHTML = `<span>${pending}</span>`;
+    const msgNew = msg.filter(m => m.statut === 'nouveau').length;
+    document.getElementById('devisBadge').textContent = pending || '0';
+    document.getElementById('msgBadge').textContent = msgNew || '0';
+  } catch(e) {}
+}
+
+/* ══ RENDER TABLES ══ */
+const statusLabel = { disponible:'<span class="status-pill pill-ok"><i class="fas fa-circle" style="font-size:6px;"></i> Disponible</span>', commande:'<span class="status-pill pill-warn">Sur commande</span>', rupture:'<span class="status-pill pill-err">Rupture</span>', nouveau:'<span class="status-pill pill-new">Nouveau</span>', traite:'<span class="status-pill pill-ok">Traité</span>', lu:'<span class="status-pill pill-ok">Lu</span>' };
+
+function renderAccTable() { renderProdTable('accTbody', accData, 'accessoires'); buildCatOptions('accCatFilter', accData); }
+function renderResTable() { renderProdTable('resTbody', resData, 'produits_reseau'); }
+
+function renderProdTable(tbodyId, data, table) {
+  const tbody = document.getElementById(tbodyId);
+  if (!data.length) { tbody.innerHTML = `<tr><td colspan="5"><div class="empty-table"><i class="fas fa-box-open"></i><p>Aucun produit. Cliquez sur "Ajouter".</p></div></td></tr>`; return; }
+  tbody.innerHTML = data.map(p => {
+    const pct = discountPct(p.prix_old, p.prix);
+    const priceCell = pct > 0
+      ? `<div class="td-price">${formatPrice(p.prix)}</div><div style="font-size:11px;color:var(--text-faint);text-decoration:line-through;">${formatPrice(p.prix_old)}</div>`
+      : `<div class="td-price">${p.prix ? formatPrice(p.prix) : '—'}</div>`;
+    return `
+  <tr data-nom="${esc(p.nom||'')}" data-cat="${esc(p.categorie||'')}">
+    <td class="td-name">${esc(p.nom)} ${p.une ? '<i class="fas fa-star" style="color:var(--accent);font-size:11px;margin-left:4px;" title="À la une"></i>' : ''}</td>
+    <td>${esc(p.categorie||'—')}</td>
+    <td>${priceCell}</td>
+    <td>${statusLabel[p.statut] || esc(p.statut||'')}</td>
+    <td><div class="action-btns">
+      <button class="action-btn" onclick="editProd(${p.id},'${table}')" title="Modifier"><i class="fas fa-pen"></i></button>
+      <button class="action-btn del" onclick="confirmDelete(${p.id},'${table}','${esc(p.nom)}')" title="Supprimer"><i class="fas fa-trash"></i></button>
+    </div></td>
+  </tr>`;
+  }).join('');
+}
+
+function renderVidTable() {
+  const tbody = document.getElementById('vidTbody');
+  if (!vidData.length) { tbody.innerHTML = `<tr><td colspan="5"><div class="empty-table"><i class="fas fa-video"></i><p>Aucune vidéo. Cliquez sur "Ajouter".</p></div></td></tr>`; return; }
+  tbody.innerHTML = vidData.map(v => `
+  <tr data-nom="${esc(v.titre||'')}" data-cat="${esc(v.categorie||'')}">
+    <td class="td-name">${esc(v.titre)}</td>
+    <td><span class="status-pill pill-new">${esc(v.categorie||'')}</span></td>
+    <td>${Number(v.vues||0).toLocaleString()}</td>
+    <td>${v.created_at ? new Date(v.created_at).toLocaleDateString('fr-MG') : '—'}</td>
+    <td><div class="action-btns">
+      <button class="action-btn" onclick="editVid(${v.id})" title="Modifier"><i class="fas fa-pen"></i></button>
+      <button class="action-btn del" onclick="confirmDelete(${v.id},'videos','${esc(v.titre)}')" title="Supprimer"><i class="fas fa-trash"></i></button>
+    </div></td>
+  </tr>`).join('');
+}
+
+function renderDevTable() {
+  const tbody = document.getElementById('devTbody');
+  if (!devData.length) { tbody.innerHTML = `<tr><td colspan="6"><div class="empty-table"><i class="fas fa-file-invoice"></i><p>Aucun devis reçu.</p></div></td></tr>`; return; }
+  tbody.innerHTML = devData.map(d => `
+  <tr>
+    <td class="td-name">${esc(d.nom||'—')}</td>
+    <td>${esc(d.telephone||'—')}</td>
+    <td style="max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${esc(d.produits||'—')}</td>
+    <td>${d.created_at ? new Date(d.created_at).toLocaleDateString('fr-MG') : '—'}</td>
+    <td>${statusLabel[d.statut] || esc(d.statut||'')}</td>
+    <td><div class="action-btns">
+      <button class="action-btn" onclick="markDevis(${d.id})" title="Marquer traité"><i class="fas fa-check"></i></button>
+      <button class="action-btn del" onclick="confirmDelete(${d.id},'devis','devis de ${esc(d.nom)}')" title="Supprimer"><i class="fas fa-trash"></i></button>
+    </div></td>
+  </tr>`).join('');
+}
+
+function renderMsgTable() {
+  const tbody = document.getElementById('msgTbody');
+  if (!msgData.length) { tbody.innerHTML = `<tr><td colspan="6"><div class="empty-table"><i class="fas fa-envelope-open"></i><p>Aucun message reçu.</p></div></td></tr>`; return; }
+  tbody.innerHTML = msgData.map(m => `
+  <tr>
+    <td class="td-name">${esc(m.nom||'—')}</td>
+    <td>${esc(m.telephone||'—')}</td>
+    <td>${esc(m.sujet||'—')}</td>
+    <td style="max-width:220px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${esc(m.message||'—')}</td>
+    <td>${m.created_at ? new Date(m.created_at).toLocaleDateString('fr-MG') : '—'}</td>
+    <td><div class="action-btns">
+      <button class="action-btn" onclick="markMsg(${m.id})" title="Marquer lu"><i class="fas fa-check"></i></button>
+      <button class="action-btn del" onclick="confirmDelete(${m.id},'messages','message de ${esc(m.nom)}')" title="Supprimer"><i class="fas fa-trash"></i></button>
+    </div></td>
+  </tr>`).join('');
+}
+
+/* ══ FILTER TABLES ══ */
+function filterTable(tableId, q) {
+  const rows = document.querySelectorAll(`#${tableId} tbody tr`);
+  q = q.toLowerCase();
+  rows.forEach(r => {
+    r.style.display = r.textContent.toLowerCase().includes(q) ? '' : 'none';
+  });
+}
+
+function filterTableCat(tableId, val, attr) {
+  const rows = document.querySelectorAll(`#${tableId} tbody tr`);
+  rows.forEach(r => {
+    if (!val) { r.style.display = ''; return; }
+    r.style.display = (r.dataset[attr] || '').toLowerCase() === val.toLowerCase() ? '' : 'none';
+  });
+}
+
+function buildCatOptions(selectId, data) {
+  const cats = [...new Set(data.map(d => d.categorie).filter(Boolean))].sort();
+  const sel = document.getElementById(selectId);
+  if (!sel) return;
+  sel.innerHTML = `<option value="">Toutes catégories</option>` + cats.map(c => `<option value="${esc(c)}">${esc(c)}</option>`).join('');
+}
+
+/* ══ PROD MODAL ══ */
+let pendingImageFile = null; // fichier sélectionné en attente d'upload
+
+function openProdModal(table, data = null) {
+  document.getElementById('pId').value = data ? data.id : '';
+  document.getElementById('pTable').value = table;
+  document.getElementById('pNom').value = data ? (data.nom||'') : '';
+  document.getElementById('pCat').value = data ? (data.categorie||'') : '';
+  document.getElementById('pPrix').value = data ? (data.prix||'') : '';
+  document.getElementById('pPrixOld').value = data ? (data.prix_old||'') : '';
+  document.getElementById('pBadge').value = data ? (data.badge||'') : '';
+  document.getElementById('pMarque').value = data ? (data.marque||'') : '';
+  document.getElementById('pStatut').value = data ? (data.statut||'disponible') : 'disponible';
+  document.getElementById('pDesc').value = data ? (data.description||'') : '';
+  document.getElementById('pImg').value = data ? (data.image_url||'') : '';
+  document.getElementById('pError').style.display = 'none';
+  document.getElementById('prodModalTitle').textContent = data ? 'Modifier le produit' : 'Ajouter un produit';
+
+  // "À la une" checkbox
+  const isUne = data ? !!data.une : false;
+  document.getElementById('pUne').checked = isUne;
+  document.getElementById('pUneCheck').classList.toggle('checked', isUne);
+
+  // Image preview
+  pendingImageFile = null;
+  resetUploadProgress();
+  if (data && data.image_url) showImagePreview(data.image_url);
+  else hideImagePreview();
+
+  document.getElementById('prodModal').classList.add('open');
+}
+
+function closeProdModal() {
+  document.getElementById('prodModal').classList.remove('open');
+  pendingImageFile = null;
+}
+function closeProdModalOnOutside(e) { if (e.target === e.currentTarget) closeProdModal(); }
+
+function editProd(id, table) {
+  const data = table === 'accessoires' ? accData.find(p=>p.id===id) : resData.find(p=>p.id===id);
+  if (data) openProdModal(table, data);
+}
+
+/* ── "À la une" toggle ── */
+function toggleUne() {
+  const cb = document.getElementById('pUne');
+  const box = document.getElementById('pUneCheck');
+  cb.checked = !cb.checked;
+  box.classList.toggle('checked', cb.checked);
+}
+
+/* ── Image preview helpers ── */
+function showImagePreview(url) {
+  document.getElementById('pImgPreviewImg').src = url;
+  document.getElementById('pImgPreview').style.display = 'block';
+  document.getElementById('pImgDropzone').style.display = 'none';
+}
+function hideImagePreview() {
+  document.getElementById('pImgPreview').style.display = 'none';
+  document.getElementById('pImgDropzone').style.display = 'block';
+}
+function removeImage() {
+  pendingImageFile = null;
+  document.getElementById('pImg').value = '';
+  document.getElementById('pImgFile').value = '';
+  hideImagePreview();
+}
+function onUrlInput(val) {
+  if (val.trim()) {
+    pendingImageFile = null;
+    showImagePreview(val.trim());
+  } else {
+    hideImagePreview();
+  }
+}
+
+/* ── File selection (click or drop) ── */
+function onFileChange(e) {
+  const file = e.target.files[0];
+  if (file) handleSelectedFile(file);
+}
+function onDragOver(e) { e.preventDefault(); document.getElementById('pImgDropzone').classList.add('dragover'); }
+function onDragLeave(e) { document.getElementById('pImgDropzone').classList.remove('dragover'); }
+function onDrop(e) {
+  e.preventDefault();
+  document.getElementById('pImgDropzone').classList.remove('dragover');
+  const file = e.dataTransfer.files[0];
+  if (file) handleSelectedFile(file);
+}
+function handleSelectedFile(file) {
+  if (!file.type.startsWith('image/')) { showToast('Veuillez sélectionner une image', 'fas fa-exclamation-triangle'); return; }
+  if (file.size > 5 * 1024 * 1024) { showToast('Image trop volumineuse (max 5 MB)', 'fas fa-exclamation-triangle'); return; }
+  pendingImageFile = file;
+  document.getElementById('pImg').value = '';
+  const reader = new FileReader();
+  reader.onload = (e) => showImagePreview(e.target.result);
+  reader.readAsDataURL(file);
+}
+
+function resetUploadProgress() {
+  document.getElementById('pUploadProgress').style.display = 'none';
+  document.getElementById('pProgressBar').style.width = '0%';
+}
+
+async function saveProd() {
+  const id    = document.getElementById('pId').value;
+  const table = document.getElementById('pTable').value;
+  const nom   = document.getElementById('pNom').value.trim();
+  const cat   = document.getElementById('pCat').value.trim();
+  const errEl = document.getElementById('pError');
+  errEl.style.display = 'none';
+  if (!nom) { errEl.textContent = 'Le nom est requis.'; errEl.style.display='block'; return; }
+  if (!cat) { errEl.textContent = 'La catégorie est requise.'; errEl.style.display='block'; return; }
+
+  const saveBtn = document.getElementById('pSaveBtn');
+  saveBtn.disabled = true;
+  saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enregistrement…';
+
+  let imageUrl = document.getElementById('pImg').value.trim() || null;
+
+  // Upload de l'image si un fichier a été sélectionné
+  if (pendingImageFile) {
+    try {
+      document.getElementById('pUploadProgress').style.display = 'block';
+      document.getElementById('pProgressBar').style.width = '50%';
+      imageUrl = await uploadImage(pendingImageFile, table);
+      document.getElementById('pProgressBar').style.width = '100%';
+    } catch (e) {
+      errEl.textContent = "Erreur d'upload image: " + e.message;
+      errEl.style.display = 'block';
+      saveBtn.disabled = false;
+      saveBtn.innerHTML = '<i class="fas fa-save"></i> Enregistrer';
+      resetUploadProgress();
+      return;
+    }
+  }
+
+  const prix    = parseInt(document.getElementById('pPrix').value) || null;
+  const prixOld = parseInt(document.getElementById('pPrixOld').value) || null;
+
+  const payload = {
+    nom, categorie: cat,
+    prix,
+    prix_old: (prixOld && prix && prixOld > prix) ? prixOld : null,
+    badge: document.getElementById('pBadge').value || null,
+    marque: document.getElementById('pMarque').value.trim()||null,
+    statut: document.getElementById('pStatut').value,
+    description: document.getElementById('pDesc').value.trim()||null,
+    image_url: imageUrl,
+    une: document.getElementById('pUne').checked,
+  };
+
+  try {
+    if (id) {
+      await sbFetch(`${table}?id=eq.${id}`, { method:'PATCH', body: JSON.stringify(payload) });
+      showToast('Produit mis à jour');
+    } else {
+      payload.created_at = new Date().toISOString();
+      await sbFetch(table, { method:'POST', body: JSON.stringify(payload) });
+      showToast('Produit ajouté');
+    }
+    closeProdModal();
+    loadTabData(currentTab);
+  } catch(e) {
+    errEl.textContent = 'Erreur: ' + e.message;
+    errEl.style.display = 'block';
+  } finally {
+    saveBtn.disabled = false;
+    saveBtn.innerHTML = '<i class="fas fa-save"></i> Enregistrer';
+    resetUploadProgress();
+  }
+}
+
+/* ══ VIDEO MODAL ══ */
+function openVidModal(data = null) {
+  document.getElementById('vId').value = data ? data.id : '';
+  document.getElementById('vTitre').value = data ? (data.titre||'') : '';
+  document.getElementById('vLien').value = data ? (data.lien_youtube||'') : '';
+  document.getElementById('vCat').value = data ? (data.categorie||'tutoriel') : 'tutoriel';
+  document.getElementById('vDuree').value = data ? (data.duree||'') : '';
+  document.getElementById('vDesc').value = data ? (data.description||'') : '';
+  document.getElementById('vMots').value = data ? (data.mots_cles||'') : '';
+  document.getElementById('vError').style.display = 'none';
+  document.getElementById('vidModalTitle').textContent = data ? 'Modifier la vidéo' : 'Ajouter une vidéo';
+  document.getElementById('vidModal').classList.add('open');
+  if (data) previewThumb();
+}
+
+function closeVidModal() { document.getElementById('vidModal').classList.remove('open'); document.getElementById('thumbPreview').style.display = 'none'; }
+function closeVidModalOnOutside(e) { if (e.target === e.currentTarget) closeVidModal(); }
+
+function editVid(id) {
+  const v = vidData.find(v=>v.id===id);
+  if (v) openVidModal(v);
+}
+
+function previewThumb() {
+  const url = document.getElementById('vLien').value;
+  const m = url.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/))([A-Za-z0-9_-]{11})/);
+  const preview = document.getElementById('thumbPreview');
+  const img = document.getElementById('thumbImg');
+  if (m) {
+    img.src = `https://img.youtube.com/vi/${m[1]}/mqdefault.jpg`;
+    preview.style.display = 'block';
+  } else {
+    preview.style.display = 'none';
+  }
+}
+
+async function saveVid() {
+  const id    = document.getElementById('vId').value;
+  const titre = document.getElementById('vTitre').value.trim();
+  const lien  = document.getElementById('vLien').value.trim();
+  const errEl = document.getElementById('vError');
+  errEl.style.display = 'none';
+  if (!titre) { errEl.textContent = 'Le titre est requis.'; errEl.style.display='block'; return; }
+  if (!lien)  { errEl.textContent = 'Le lien YouTube est requis.'; errEl.style.display='block'; return; }
+
+  const payload = {
+    titre,
+    lien_youtube: lien,
+    categorie: document.getElementById('vCat').value,
+    duree: document.getElementById('vDuree').value.trim()||null,
+    description: document.getElementById('vDesc').value.trim()||null,
+    mots_cles: document.getElementById('vMots').value.trim()||null,
+  };
+
+  try {
+    if (id) {
+      await sbFetch(`videos?id=eq.${id}`, { method:'PATCH', body: JSON.stringify(payload) });
+      showToast('Vidéo mise à jour');
+    } else {
+      payload.created_at = new Date().toISOString();
+      payload.vues = 0;
+      await sbFetch('videos', { method:'POST', body: JSON.stringify(payload) });
+      showToast('Vidéo ajoutée');
+    }
+    closeVidModal();
+    loadTabData('videos');
+  } catch(e) {
+    errEl.textContent = 'Erreur: ' + e.message;
+    errEl.style.display = 'block';
+  }
+}
+
+/* ══ MARK STATUS ══ */
+async function markDevis(id) {
+  try {
+    await sbFetch(`devis?id=eq.${id}`, { method:'PATCH', body: JSON.stringify({ statut:'traite' }) });
+    showToast('Devis marqué traité');
+    devData = await loadTable('devis');
+    renderDevTable();
+  } catch(e) {}
+}
+
+async function markMsg(id) {
+  try {
+    await sbFetch(`messages?id=eq.${id}`, { method:'PATCH', body: JSON.stringify({ statut:'lu' }) });
+    showToast('Message marqué lu');
+    msgData = await loadTable('messages');
+    renderMsgTable();
+  } catch(e) {}
+}
+
+/* ══ DELETE ══ */
+function confirmDelete(id, table, label) {
+  document.getElementById('confirmDesc').textContent = `Supprimer "${label}" ? Cette action est irréversible.`;
+  const btn = document.getElementById('confirmOkBtn');
+  btn.onclick = () => doDelete(id, table);
+  document.getElementById('confirmModal').classList.add('open');
+}
+
+async function doDelete(id, table) {
+  document.getElementById('confirmModal').classList.remove('open');
+  try {
+    await sbFetch(`${table}?id=eq.${id}`, { method:'DELETE' });
+    showToast('Supprimé', 'fas fa-trash');
+    loadTabData(currentTab);
+  } catch(e) { showToast('Erreur: ' + e.message, 'fas fa-exclamation-triangle'); }
+}
+
+function closeConfirm(e) { if (e.target === e.currentTarget) document.getElementById('confirmModal').classList.remove('open'); }
+
+/* ══ LOGOUT ══ */
+function logout() {
+  sessionStorage.removeItem('infinity_admin');
+  window.location.href = '../index.html';
+}
+
+/* ══ INIT ══ */
+loadDashboard();
+setTopbarActions('dashboard');
+</script>
+</body>
+</html>

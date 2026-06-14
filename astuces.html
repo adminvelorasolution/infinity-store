@@ -1,0 +1,816 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Astuces & Tutoriels — Infinity Store</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/shared.css">
+  <style>
+    /* ── SEARCH BAR ── */
+    .search-zone {
+      max-width: 1600px;
+      margin: 0 auto;
+      padding: 0 40px 32px;
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    .search-big {
+      flex: 1;
+      min-width: 220px;
+      position: relative;
+    }
+    .search-big i {
+      position: absolute;
+      left: 18px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-faint);
+      font-size: 15px;
+      pointer-events: none;
+    }
+    .search-big input {
+      width: 100%;
+      height: 50px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 0 20px 0 50px;
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 15px;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .search-big input::placeholder { color: var(--text-faint); }
+    .search-big input:focus {
+      border-color: rgba(240,192,64,0.4);
+      box-shadow: 0 0 0 3px rgba(240,192,64,0.07);
+    }
+
+    /* ── CATEGORIES TABS ── */
+    .cat-tabs {
+      max-width: 1600px;
+      margin: 0 auto;
+      padding: 0 40px 32px;
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .cat-tab {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 8px 18px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--text-dim);
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.18s;
+    }
+    .cat-tab:hover { border-color: rgba(240,192,64,0.3); color: var(--text); }
+    .cat-tab.active { background: var(--accent); border-color: var(--accent); color: #0a0a0f; font-weight: 600; }
+    .cat-tab .tab-count {
+      background: rgba(255,255,255,0.18);
+      padding: 1px 7px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+    .cat-tab.active .tab-count { background: rgba(0,0,0,0.18); }
+
+    /* ── CONTENT AREA ── */
+    .content-area {
+      max-width: 1600px;
+      margin: 0 auto;
+      padding: 0 40px 80px;
+      display: grid;
+      grid-template-columns: 1fr 360px;
+      gap: 32px;
+      align-items: start;
+    }
+
+    /* ── VIDEO GRID ── */
+    .videos-section {}
+    .result-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .result-count { font-size: 13px; color: var(--text-dim); }
+    .result-count strong { font-family: 'Syne', sans-serif; font-size: 14px; color: var(--text); }
+
+    .sort-select {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 6px 14px;
+      color: var(--text-dim);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 12px;
+      outline: none;
+      cursor: pointer;
+    }
+
+    .videos-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+    }
+
+    /* ── VIDEO CARD ── */
+    .video-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      cursor: pointer;
+      transition: transform 0.22s cubic-bezier(.22,.68,0,1.2), border-color 0.2s, box-shadow 0.22s;
+      animation: cardIn 0.3s ease both;
+    }
+    .video-card:hover {
+      transform: translateY(-4px);
+      border-color: rgba(240,192,64,0.25);
+      box-shadow: 0 16px 40px rgba(0,0,0,0.5);
+    }
+    @keyframes cardIn {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .video-thumb {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 16/9;
+      background: var(--surface2);
+      overflow: hidden;
+    }
+    .video-thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.3s;
+    }
+    .video-card:hover .video-thumb img { transform: scale(1.04); }
+
+    .play-overlay {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0,0,0,0.35);
+      transition: background 0.2s;
+    }
+    .video-card:hover .play-overlay { background: rgba(0,0,0,0.2); }
+
+    .play-btn {
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      background: rgba(240,192,64,0.9);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      color: #0a0a0f;
+      transition: transform 0.2s, background 0.2s;
+    }
+    .video-card:hover .play-btn { transform: scale(1.12); background: var(--accent); }
+
+    .video-duration {
+      position: absolute;
+      bottom: 8px;
+      right: 10px;
+      background: rgba(0,0,0,0.75);
+      color: #fff;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 4px;
+      letter-spacing: 0.3px;
+    }
+
+    .video-cat-badge {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      padding: 3px 10px;
+      border-radius: 999px;
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      backdrop-filter: blur(4px);
+    }
+    .badge-astuce   { background: rgba(240,192,64,0.85); color: #0a0a0f; }
+    .badge-tutoriel { background: rgba(48,208,144,0.85); color: #0a0a0f; }
+    .badge-conseil  { background: rgba(224,120,48,0.85); color: #fff; }
+    .badge-reseau   { background: rgba(80,160,240,0.85); color: #fff; }
+
+    .video-body { padding: 16px; }
+    .video-meta {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 8px;
+      flex-wrap: wrap;
+    }
+    .video-date { font-size: 11px; color: var(--text-faint); }
+    .video-views {
+      font-size: 11px;
+      color: var(--text-faint);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .video-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text);
+      line-height: 1.3;
+      margin-bottom: 8px;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .video-desc {
+      font-size: 12px;
+      color: var(--text-dim);
+      line-height: 1.55;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .video-tags {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-top: 12px;
+    }
+    .video-tag {
+      padding: 3px 10px;
+      border-radius: 999px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      font-size: 10px;
+      color: var(--text-faint);
+      font-weight: 500;
+    }
+
+    /* ── SIDEBAR ── */
+    .sidebar { position: sticky; top: 88px; display: flex; flex-direction: column; gap: 20px; }
+
+    .sidebar-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+    }
+    .sidebar-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text);
+      letter-spacing: 0.3px;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .sidebar-title i { color: var(--accent); font-size: 14px; }
+
+    .popular-list { display: flex; flex-direction: column; gap: 12px; }
+    .popular-item {
+      display: flex;
+      gap: 12px;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+    .popular-item:hover { opacity: 0.75; }
+    .popular-thumb {
+      width: 80px;
+      height: 52px;
+      border-radius: 8px;
+      background: var(--surface2);
+      overflow: hidden;
+      flex-shrink: 0;
+      position: relative;
+    }
+    .popular-thumb img { width:100%; height:100%; object-fit:cover; }
+    .popular-thumb-icon {
+      width:100%; height:100%;
+      display:flex; align-items:center; justify-content:center;
+      color: var(--text-faint); font-size: 20px;
+    }
+    .popular-info {}
+    .popular-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text);
+      line-height: 1.3;
+      margin-bottom: 4px;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .popular-views { font-size: 11px; color: var(--text-faint); }
+
+    .tags-cloud { display: flex; gap: 6px; flex-wrap: wrap; }
+    .tag-btn {
+      padding: 5px 12px;
+      border-radius: 999px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      font-size: 12px;
+      color: var(--text-dim);
+      cursor: pointer;
+      transition: all 0.18s;
+    }
+    .tag-btn:hover { border-color: rgba(240,192,64,0.3); color: var(--accent); }
+    .tag-btn.active { background: rgba(240,192,64,0.1); border-color: rgba(240,192,64,0.4); color: var(--accent); }
+
+    /* ── VIDEO PLAYER MODAL ── */
+    .player-modal { max-width: 860px; }
+    .player-wrap {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 16/9;
+      background: #000;
+    }
+    .player-wrap iframe { width: 100%; height: 100%; border: none; }
+    .player-body { padding: 24px; }
+    .player-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--text);
+      margin-bottom: 10px;
+      line-height: 1.25;
+    }
+    .player-desc {
+      font-size: 13px;
+      color: var(--text-dim);
+      line-height: 1.7;
+      margin-bottom: 16px;
+    }
+    .player-meta {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+      padding-top: 16px;
+      border-top: 1px solid var(--border);
+    }
+    .player-meta-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      color: var(--text-dim);
+    }
+    .player-meta-item i { color: var(--accent); font-size: 12px; }
+    .yt-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 18px;
+      border-radius: 999px;
+      background: rgba(255,0,0,0.12);
+      border: 1px solid rgba(255,0,0,0.2);
+      color: #ff4444;
+      font-size: 12px;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.2s;
+      margin-left: auto;
+    }
+    .yt-link:hover { background: rgba(255,0,0,0.2); }
+
+    /* ── EMPTY STATE ── */
+    .empty-state {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 80px 20px;
+      color: var(--text-faint);
+    }
+    .empty-state i { font-size: 48px; margin-bottom: 16px; display: block; }
+    .empty-state h3 { font-family: 'Syne', sans-serif; font-size: 18px; color: var(--text-dim); margin-bottom: 8px; }
+    .empty-state p { font-size: 13px; }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 1100px) {
+      .content-area { grid-template-columns: 1fr; }
+      .sidebar { position: static; }
+    }
+    @media (max-width: 768px) {
+      .search-zone, .cat-tabs, .content-area { padding-left: 20px; padding-right: 20px; }
+      .videos-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══ HEADER ══ -->
+<header>
+  <div class="header-inner">
+    <a href="index.html" class="logo">
+      <div class="logo-mark"><i class="fas fa-infinity"></i></div>
+      <div>
+        <div class="logo-text">Infinity Store</div>
+        <span class="logo-sub">Antanimena · Antananarivo</span>
+      </div>
+    </a>
+    <nav class="nav-links" id="navLinks">
+      <a href="index.html" class="nav-link">Accueil</a>
+      <a href="reseau.html" class="nav-link">Réseau</a>
+      <a href="accessoires.html" class="nav-link">Accessoires</a>
+      <a href="astuces.html" class="nav-link active">Astuces</a>
+      <a href="contact.html" class="nav-link">Contact</a>
+    </nav>
+    <div class="header-right">
+      <a href="contact.html" class="header-contact-btn"><i class="fas fa-phone"></i><span>Contact</span></a>
+      <button class="btn-admin" onclick="openLoginModal()"><i class="fas fa-lock"></i> Admin</button>
+      <button class="nav-burger" id="navBurger" onclick="toggleNav()"><i class="fas fa-bars"></i></button>
+    </div>
+  </div>
+</header>
+
+<!-- ══ PAGE HERO ══ -->
+<div class="page-hero">
+  <div class="page-hero-inner">
+    <div class="page-eyebrow">Apprendre & progresser</div>
+    <h1 class="page-title">Astuces & Tutoriels</h1>
+    <p class="page-desc">Vidéos, conseils et guides pratiques pour maîtriser votre équipement informatique.</p>
+  </div>
+</div>
+
+<!-- ══ SEARCH ══ -->
+<div class="search-zone">
+  <div class="search-big">
+    <i class="fas fa-search"></i>
+    <input type="text" id="searchInput" placeholder="Rechercher un tutoriel, une astuce…" oninput="filterVideos()">
+  </div>
+  <select class="sort-select" id="sortSelect" onchange="filterVideos()">
+    <option value="recent">Plus récents</option>
+    <option value="popular">Plus populaires</option>
+    <option value="az">A → Z</option>
+  </select>
+</div>
+
+<!-- ══ CATEGORIES ══ -->
+<div class="cat-tabs" id="catTabs">
+  <button class="cat-tab active" data-cat="all" onclick="setCategory('all', this)">
+    <i class="fas fa-th-large" style="font-size:11px;"></i> Tout <span class="tab-count" id="countAll">0</span>
+  </button>
+  <button class="cat-tab" data-cat="tutoriel" onclick="setCategory('tutoriel', this)">
+    <i class="fas fa-play-circle" style="font-size:11px;"></i> Tutoriels <span class="tab-count" id="countTutoriel">0</span>
+  </button>
+  <button class="cat-tab" data-cat="astuce" onclick="setCategory('astuce', this)">
+    <i class="fas fa-lightbulb" style="font-size:11px;"></i> Astuces <span class="tab-count" id="countAstuce">0</span>
+  </button>
+  <button class="cat-tab" data-cat="conseil" onclick="setCategory('conseil', this)">
+    <i class="fas fa-star" style="font-size:11px;"></i> Conseils <span class="tab-count" id="countConseil">0</span>
+  </button>
+  <button class="cat-tab" data-cat="reseau" onclick="setCategory('reseau', this)">
+    <i class="fas fa-wifi" style="font-size:11px;"></i> Réseau <span class="tab-count" id="countReseau">0</span>
+  </button>
+</div>
+
+<!-- ══ CONTENT ══ -->
+<div class="content-area">
+
+  <!-- Videos -->
+  <div class="videos-section">
+    <div class="result-bar">
+      <div class="result-count" id="resultCount"><strong>0</strong> vidéo(s)</div>
+    </div>
+    <div class="videos-grid" id="videosGrid">
+      <div class="loader-wrap"><div class="spinner"></div><span>Chargement…</span></div>
+    </div>
+  </div>
+
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <div class="sidebar-card">
+      <div class="sidebar-title"><i class="fas fa-fire"></i> Les plus vus</div>
+      <div class="popular-list" id="popularList">
+        <div style="color:var(--text-faint);font-size:12px;">Chargement…</div>
+      </div>
+    </div>
+    <div class="sidebar-card">
+      <div class="sidebar-title"><i class="fas fa-tags"></i> Mots-clés</div>
+      <div class="tags-cloud" id="tagsCloud"></div>
+    </div>
+    <div class="sidebar-card" style="background:rgba(240,192,64,0.05);border-color:rgba(240,192,64,0.15);">
+      <div class="sidebar-title" style="color:var(--accent);"><i class="fas fa-question-circle"></i> Une question ?</div>
+      <p style="font-size:13px;color:var(--text-dim);line-height:1.6;margin-bottom:16px;">
+        Vous avez besoin d'aide sur un sujet précis ? Contactez notre équipe technique.
+      </p>
+      <a href="contact.html" style="display:inline-flex;align-items:center;gap:8px;padding:10px 20px;background:var(--accent);color:#0a0a0f;border-radius:999px;font-family:'Syne',sans-serif;font-size:13px;font-weight:700;text-decoration:none;">
+        <i class="fas fa-paper-plane"></i> Nous écrire
+      </a>
+    </div>
+  </div>
+
+</div>
+
+<!-- ══ VIDEO PLAYER MODAL ══ -->
+<div class="modal-overlay" id="playerModal" onclick="closePlayerOnOutside(event)">
+  <div class="modal-box player-modal">
+    <div style="position:relative;">
+      <button onclick="closePlayerModal()" style="position:absolute;top:12px;right:12px;z-index:10;width:36px;height:36px;background:rgba(0,0,0,0.7);border:1px solid rgba(255,255,255,0.15);border-radius:50%;color:#fff;font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;">
+        <i class="fas fa-times"></i>
+      </button>
+      <div class="player-wrap">
+        <iframe id="playerIframe" allowfullscreen allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"></iframe>
+      </div>
+    </div>
+    <div class="player-body">
+      <div class="player-title" id="playerTitle"></div>
+      <div class="player-desc" id="playerDesc"></div>
+      <div class="player-meta">
+        <div class="player-meta-item"><i class="fas fa-folder"></i> <span id="playerCat"></span></div>
+        <div class="player-meta-item"><i class="fas fa-calendar"></i> <span id="playerDate"></span></div>
+        <div class="player-meta-item"><i class="fas fa-tags"></i> <span id="playerTags"></span></div>
+        <a class="yt-link" id="playerYtLink" href="#" target="_blank" rel="noopener">
+          <i class="fab fa-youtube"></i> Voir sur YouTube
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ LOGIN MODAL ══ -->
+<div class="modal-overlay" id="loginModal" onclick="closeLoginOnOutside(event)">
+  <div class="modal-box" style="max-width:420px;">
+    <div style="padding:36px;">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:28px;">
+        <div class="logo-mark" style="width:40px;height:40px;"><i class="fas fa-infinity"></i></div>
+        <div>
+          <div style="font-family:'Syne',sans-serif;font-size:18px;font-weight:800;color:var(--text);">Admin Panel</div>
+          <div style="font-size:12px;color:var(--text-dim);">Infinity Store</div>
+        </div>
+        <button onclick="closeLoginModal()" style="margin-left:auto;background:none;border:none;color:var(--text-dim);font-size:18px;cursor:pointer;"><i class="fas fa-times"></i></button>
+      </div>
+      <div id="loginError" class="error-msg" style="display:none;"></div>
+      <div class="form-group">
+        <label class="form-label">Mot de passe admin</label>
+        <div class="input-wrap">
+          <i class="fas fa-lock input-icon"></i>
+          <input type="password" id="adminPassword" class="form-input has-icon" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()">
+        </div>
+      </div>
+      <button class="btn-admin" style="width:100%;justify-content:center;height:44px;border-radius:var(--radius-sm);" onclick="doLogin()">
+        <i class="fas fa-sign-in-alt"></i> Accéder
+      </button>
+    </div>
+  </div>
+</div>
+
+<script src="assets/shared.js"></script>
+<script>
+/* ══ STATE ══ */
+let allVideos  = [];
+let activeCategory = 'all';
+let activeTag  = null;
+
+/* ══ SUPABASE LOAD ══ */
+async function loadVideos() {
+  try {
+    const data = await sbFetch('videos?order=created_at.desc&select=*');
+    allVideos = data || [];
+  } catch(e) {
+    // Fallback demo data
+    allVideos = DEMO_VIDEOS;
+  }
+  buildTagsCloud();
+  buildPopular();
+  updateCounts();
+  filterVideos();
+}
+
+/* ══ FILTER ══ */
+function setCategory(cat, el) {
+  activeCategory = cat;
+  activeTag = null;
+  document.querySelectorAll('.cat-tab').forEach(b => b.classList.remove('active'));
+  if (el) el.classList.add('active');
+  document.querySelectorAll('.tag-btn').forEach(b => b.classList.remove('active'));
+  filterVideos();
+}
+
+function setTag(tag, el) {
+  if (activeTag === tag) {
+    activeTag = null;
+    el.classList.remove('active');
+  } else {
+    activeTag = tag;
+    document.querySelectorAll('.tag-btn').forEach(b => b.classList.remove('active'));
+    el.classList.add('active');
+  }
+  filterVideos();
+}
+
+function filterVideos() {
+  const q     = (document.getElementById('searchInput').value || '').toLowerCase().trim();
+  const sort  = document.getElementById('sortSelect').value;
+
+  let list = allVideos.filter(v => {
+    const matchCat = activeCategory === 'all' || v.categorie === activeCategory;
+    const matchTag = !activeTag || (v.mots_cles || '').toLowerCase().includes(activeTag.toLowerCase());
+    if (!matchCat || !matchTag) return false;
+    if (!q) return true;
+    return (
+      (v.titre || '').toLowerCase().includes(q) ||
+      (v.description || '').toLowerCase().includes(q) ||
+      (v.mots_cles || '').toLowerCase().includes(q)
+    );
+  });
+
+  if (sort === 'popular') list = list.slice().sort((a,b) => (b.vues||0) - (a.vues||0));
+  else if (sort === 'az')  list = list.slice().sort((a,b) => (a.titre||'').localeCompare(b.titre||''));
+
+  renderVideos(list);
+  document.getElementById('resultCount').innerHTML = `<strong>${list.length}</strong> vidéo(s)`;
+}
+
+/* ══ RENDER ══ */
+function renderVideos(list) {
+  const grid = document.getElementById('videosGrid');
+  if (!list.length) {
+    grid.innerHTML = `<div class="empty-state"><i class="fas fa-video-slash"></i><h3>Aucun résultat</h3><p>Essayez un autre mot-clé ou une autre catégorie.</p></div>`;
+    return;
+  }
+  grid.innerHTML = list.map((v, i) => {
+    const ytId = extractYtId(v.lien_youtube || '');
+    const thumb = ytId ? `https://img.youtube.com/vi/${ytId}/mqdefault.jpg` : '';
+    const badgeClass = `badge-${v.categorie || 'astuce'}`;
+    const badgeLabel = { tutoriel:'Tutoriel', astuce:'Astuce', conseil:'Conseil', reseau:'Réseau' }[v.categorie] || v.categorie || 'Astuce';
+    const tags = (v.mots_cles || '').split(',').map(t => t.trim()).filter(Boolean);
+    return `
+    <div class="video-card" onclick="openPlayer(${i})" style="animation-delay:${i*0.04}s">
+      <div class="video-thumb">
+        ${thumb ? `<img src="${thumb}" alt="${esc(v.titre)}" loading="lazy">` : `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;"><i class="fab fa-youtube" style="font-size:48px;color:var(--text-faint);"></i></div>`}
+        <div class="play-overlay"><div class="play-btn"><i class="fas fa-play" style="margin-left:3px;"></i></div></div>
+        <span class="video-cat-badge ${badgeClass}">${badgeLabel}</span>
+        ${v.duree ? `<span class="video-duration">${esc(v.duree)}</span>` : ''}
+      </div>
+      <div class="video-body">
+        <div class="video-meta">
+          <span class="video-date">${formatDate(v.created_at)}</span>
+          ${v.vues ? `<span class="video-views"><i class="fas fa-eye" style="font-size:10px;"></i> ${Number(v.vues).toLocaleString()}</span>` : ''}
+        </div>
+        <div class="video-title">${esc(v.titre)}</div>
+        <div class="video-desc">${esc(v.description)}</div>
+        ${tags.length ? `<div class="video-tags">${tags.slice(0,3).map(t => `<span class="video-tag">#${esc(t)}</span>`).join('')}</div>` : ''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+/* ══ PLAYER ══ */
+let currentList = [];
+function openPlayer(idx) {
+  // Rebuild current filtered list index
+  const q = (document.getElementById('searchInput').value || '').toLowerCase().trim();
+  const sort = document.getElementById('sortSelect').value;
+  let list = allVideos.filter(v => {
+    const matchCat = activeCategory === 'all' || v.categorie === activeCategory;
+    const matchTag = !activeTag || (v.mots_cles || '').toLowerCase().includes(activeTag.toLowerCase());
+    if (!matchCat || !matchTag) return false;
+    if (!q) return true;
+    return (v.titre||'').toLowerCase().includes(q) || (v.description||'').toLowerCase().includes(q) || (v.mots_cles||'').toLowerCase().includes(q);
+  });
+  if (sort === 'popular') list = list.slice().sort((a,b) => (b.vues||0)-(a.vues||0));
+  else if (sort === 'az')  list = list.slice().sort((a,b) => (a.titre||'').localeCompare(b.titre||''));
+  const v = list[idx];
+  if (!v) return;
+
+  const ytId = extractYtId(v.lien_youtube || '');
+  if (!ytId) { showToast('Lien YouTube invalide', 'fas fa-exclamation-triangle'); return; }
+
+  document.getElementById('playerIframe').src = `https://www.youtube.com/embed/${ytId}?autoplay=1&rel=0`;
+  document.getElementById('playerTitle').textContent = v.titre || '';
+  document.getElementById('playerDesc').textContent = v.description || '';
+  document.getElementById('playerCat').textContent = v.categorie || '';
+  document.getElementById('playerDate').textContent = formatDate(v.created_at);
+  const tags = (v.mots_cles || '').split(',').map(t => t.trim()).filter(Boolean);
+  document.getElementById('playerTags').textContent = tags.map(t => '#'+t).join(' ') || '—';
+  document.getElementById('playerYtLink').href = v.lien_youtube || '#';
+
+  // Increment vues
+  if (v.id) incrementVues(v.id);
+
+  document.getElementById('playerModal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closePlayerModal() {
+  document.getElementById('playerModal').classList.remove('open');
+  document.getElementById('playerIframe').src = '';
+  document.body.style.overflow = '';
+}
+
+function closePlayerOnOutside(e) {
+  if (e.target === e.currentTarget) closePlayerModal();
+}
+
+async function incrementVues(id) {
+  try {
+    const v = allVideos.find(x => x.id === id);
+    if (!v) return;
+    v.vues = (v.vues || 0) + 1;
+    await sbFetch(`videos?id=eq.${id}`, {
+      method: 'PATCH',
+      body: JSON.stringify({ vues: v.vues })
+    });
+  } catch(e) {}
+}
+
+/* ══ UTILS ══ */
+function extractYtId(url) {
+  if (!url) return '';
+  const m = url.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/))([A-Za-z0-9_-]{11})/);
+  return m ? m[1] : '';
+}
+
+function formatDate(dt) {
+  if (!dt) return '';
+  const d = new Date(dt);
+  return d.toLocaleDateString('fr-MG', { day:'2-digit', month:'short', year:'numeric' });
+}
+
+function buildTagsCloud() {
+  const all = {};
+  allVideos.forEach(v => {
+    (v.mots_cles || '').split(',').map(t => t.trim()).filter(Boolean).forEach(t => {
+      all[t] = (all[t] || 0) + 1;
+    });
+  });
+  const sorted = Object.entries(all).sort((a,b) => b[1]-a[1]).slice(0, 20);
+  const cloud = document.getElementById('tagsCloud');
+  if (!cloud) return;
+  if (!sorted.length) { cloud.innerHTML = '<span style="font-size:12px;color:var(--text-faint);">Aucun mot-clé</span>'; return; }
+  cloud.innerHTML = sorted.map(([t]) => `<button class="tag-btn" onclick="setTag('${esc(t)}', this)">#${esc(t)}</button>`).join('');
+}
+
+function buildPopular() {
+  const top = allVideos.slice().sort((a,b) => (b.vues||0)-(a.vues||0)).slice(0,5);
+  const list = document.getElementById('popularList');
+  if (!list) return;
+  if (!top.length) { list.innerHTML = '<span style="font-size:12px;color:var(--text-faint);">Aucune vidéo</span>'; return; }
+  list.innerHTML = top.map((v, i) => {
+    const ytId = extractYtId(v.lien_youtube || '');
+    const thumb = ytId ? `https://img.youtube.com/vi/${ytId}/default.jpg` : '';
+    const globalIdx = allVideos.indexOf(v);
+    return `
+    <div class="popular-item" onclick="openPlayer(${globalIdx})">
+      <div class="popular-thumb">
+        ${thumb ? `<img src="${thumb}" alt="">` : `<div class="popular-thumb-icon"><i class="fas fa-play"></i></div>`}
+      </div>
+      <div class="popular-info">
+        <div class="popular-title">${esc(v.titre)}</div>
+        <div class="popular-views"><i class="fas fa-eye" style="font-size:10px;margin-right:3px;"></i>${Number(v.vues||0).toLocaleString()} vues</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function updateCounts() {
+  const cats = ['tutoriel','astuce','conseil','reseau'];
+  document.getElementById('countAll').textContent = allVideos.length;
+  cats.forEach(c => {
+    const el = document.getElementById('count' + c.charAt(0).toUpperCase() + c.slice(1));
+    if (el) el.textContent = allVideos.filter(v => v.categorie === c).length;
+  });
+}
+
+/* ══ DEMO FALLBACK DATA ══ */
+const DEMO_VIDEOS = [
+  { id:1, titre:'Comment configurer un routeur MikroTik en 10 minutes', description:'Guide complet pour débutants sur la configuration d\'un routeur MikroTik. NAT, DHCP et WiFi.', categorie:'tutoriel', lien_youtube:'https://www.youtube.com/watch?v=dQw4w9WgXcQ', mots_cles:'mikrotik,réseau,routeur,configuration', duree:'10:32', vues:1240, created_at:'2025-04-15' },
+  { id:2, titre:'5 astuces pour accélérer votre PC Windows', description:'Optimisez les performances de votre ordinateur avec ces 5 conseils simples et efficaces.', categorie:'astuce', lien_youtube:'https://www.youtube.com/watch?v=dQw4w9WgXcQ', mots_cles:'windows,performance,optimisation,pc', duree:'7:15', vues:980, created_at:'2025-04-10' },
+  { id:3, titre:'Choisir le bon câble réseau : Cat5e vs Cat6 vs Cat6a', description:'Comprendre les différences entre les câbles réseau pour faire le bon choix selon votre usage.', categorie:'conseil', lien_youtube:'https://www.youtube.com/watch?v=dQw4w9WgXcQ', mots_cles:'câble,réseau,cat6,ethernet', duree:'5:48', vues:750, created_at:'2025-03-28' },
+  { id:4, titre:'Installer un point d\'accès WiFi Ubiquiti UniFi', description:'Installation et configuration d\'un AP UniFi pour une couverture WiFi optimale.', categorie:'reseau', lien_youtube:'https://www.youtube.com/watch?v=dQw4w9WgXcQ', mots_cles:'ubiquiti,unifi,wifi,point accès', duree:'14:20', vues:620, created_at:'2025-03-15' },
+  { id:5, titre:'Diagnostic rapide d\'une panne matérielle', description:'Comment identifier rapidement la source d\'une panne sur un ordinateur.', categorie:'tutoriel', lien_youtube:'https://www.youtube.com/watch?v=dQw4w9WgXcQ', mots_cles:'diagnostic,panne,réparation,hardware', duree:'9:05', vues:540, created_at:'2025-03-01' },
+  { id:6, titre:'Astuce : prolonger la durée de vie de votre batterie laptop', description:'Conseils pratiques pour préserver la batterie de votre ordinateur portable.', categorie:'astuce', lien_youtube:'https://www.youtube.com/watch?v=dQw4w9WgXcQ', mots_cles:'batterie,laptop,durée,économie', duree:'4:30', vues:410, created_at:'2025-02-20' },
+];
+
+loadVideos();
+</script>
+</body>
+</html>

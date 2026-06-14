@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Accessoires Informatiques — Infinity Store</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/shared.css">
+  <style>
+    /* ── LAYOUT ── */
+    .shop-layout {
+      max-width: 1600px;
+      margin: 0 auto;
+      padding: 0 40px 80px;
+      display: grid;
+      grid-template-columns: 260px 1fr;
+      gap: 32px;
+      align-items: start;
+    }
+
+    /* ── SIDEBAR FILTERS ── */
+    .filters-panel {
+      position: sticky;
+      top: 88px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+    .filters-header {
+      padding: 18px 20px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .filters-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .filters-title i { color: var(--accent); }
+    .clear-btn {
+      font-size: 11px;
+      color: var(--accent);
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-weight: 600;
+    }
+    .clear-btn:hover { text-decoration: underline; }
+    .filter-section {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border);
+    }
+    .filter-section:last-child { border-bottom: none; }
+    .filter-section-title {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--text-faint);
+      margin-bottom: 12px;
+    }
+
+    .filter-check {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 6px 0;
+      cursor: pointer;
+      transition: color 0.18s;
+    }
+    .filter-check:hover { color: var(--text); }
+    .filter-check input[type=checkbox] { display: none; }
+    .check-box {
+      width: 16px;
+      height: 16px;
+      border-radius: 4px;
+      border: 1.5px solid var(--border);
+      background: var(--surface2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 9px;
+      color: #0a0a0f;
+      transition: all 0.18s;
+      flex-shrink: 0;
+    }
+    .filter-check.checked .check-box { background: var(--accent); border-color: var(--accent); }
+    .check-label { font-size: 13px; color: var(--text-dim); flex: 1; }
+    .filter-check.checked .check-label { color: var(--text); }
+    .check-count { font-size: 11px; color: var(--text-faint); }
+
+    /* Price slider */
+    .price-range-display {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 12px;
+      font-size: 13px;
+    }
+    .price-min { color: var(--text-dim); }
+    .price-max { color: var(--accent); font-family: 'Syne', sans-serif; font-weight: 700; }
+    input[type=range] {
+      width: 100%;
+      -webkit-appearance: none;
+      height: 4px;
+      background: var(--surface2);
+      border-radius: 2px;
+      outline: none;
+      cursor: pointer;
+    }
+    input[type=range]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: var(--accent);
+      border: 2px solid var(--bg);
+      box-shadow: 0 2px 8px rgba(240,192,64,0.4);
+      cursor: pointer;
+    }
+
+    /* ── MAIN SHOP AREA ── */
+    .shop-main {}
+
+    .shop-topbar {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+    }
+    .search-wrap {
+      flex: 1;
+      min-width: 200px;
+      position: relative;
+    }
+    .search-wrap i { position:absolute; left:14px; top:50%; transform:translateY(-50%); color:var(--text-faint); font-size:13px; pointer-events:none; }
+    .search-wrap input {
+      width: 100%;
+      height: 44px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 0 16px 0 42px;
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .search-wrap input::placeholder { color: var(--text-faint); }
+    .search-wrap input:focus { border-color: rgba(240,192,64,0.4); box-shadow: 0 0 0 3px rgba(240,192,64,0.07); }
+
+    .sort-wrap select {
+      height: 44px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 0 20px;
+      color: var(--text-dim);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 13px;
+      outline: none;
+      cursor: pointer;
+    }
+
+    .view-toggle { display:flex; gap:4px; }
+    .view-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text-faint);
+      font-size: 14px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.18s;
+    }
+    .view-btn.active { background: rgba(240,192,64,0.1); border-color: rgba(240,192,64,0.3); color: var(--accent); }
+
+    /* Tags actifs */
+    .active-filters {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+    }
+    .active-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 12px;
+      border-radius: 999px;
+      background: rgba(240,192,64,0.1);
+      border: 1px solid rgba(240,192,64,0.25);
+      font-size: 11px;
+      color: var(--accent);
+      font-weight: 500;
+    }
+    .active-chip button { background:none; border:none; color: var(--accent); cursor:pointer; font-size:10px; padding:0; }
+
+    /* ── PRODUCT GRID ── */
+    .products-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      transition: all 0.2s;
+    }
+    .products-grid.list-view { grid-template-columns: 1fr; }
+
+    /* Grid card */
+    .prod-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      cursor: pointer;
+      transition: transform 0.22s cubic-bezier(.22,.68,0,1.2), border-color 0.2s, box-shadow 0.22s;
+      display: flex;
+      flex-direction: column;
+      animation: cardIn 0.3s ease both;
+    }
+    .prod-card:hover { transform: translateY(-4px); border-color: rgba(240,192,64,0.25); box-shadow: 0 14px 36px rgba(0,0,0,0.45); }
+    @keyframes cardIn { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
+
+    /* List card */
+    .products-grid.list-view .prod-card {
+      flex-direction: row;
+      transform: none !important;
+    }
+    .products-grid.list-view .prod-card:hover { box-shadow: 0 4px 20px rgba(0,0,0,0.3); }
+    .products-grid.list-view .prod-img { width: 180px; aspect-ratio: unset; height: 140px; flex-shrink: 0; }
+    .products-grid.list-view .prod-body { flex: 1; display: flex; align-items: center; gap: 24px; padding: 20px 24px; }
+    .products-grid.list-view .prod-main { flex: 1; }
+    .products-grid.list-view .prod-name { -webkit-line-clamp: 1; }
+
+    .prod-img {
+      width: 100%;
+      aspect-ratio: 1;
+      background: var(--surface2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      position: relative;
+    }
+    .prod-img img { width:100%; height:100%; object-fit:cover; transition: transform 0.3s; }
+    .prod-card:hover .prod-img img { transform: scale(1.04); }
+    .prod-img-icon { color: var(--text-faint); font-size: 32px; }
+
+    .prod-ribbon {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      padding: 3px 10px;
+      border-radius: 999px;
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .ribbon-new  { background: var(--accent); color: #0a0a0f; }
+    .ribbon-promo { background: var(--red); color: #fff; }
+    .ribbon-hot  { background: var(--accent2); color: #fff; }
+
+    .wish-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background: rgba(10,10,15,0.6);
+      border: 1px solid var(--border);
+      color: var(--text-faint);
+      font-size: 12px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+      opacity: 0;
+    }
+    .prod-card:hover .wish-btn { opacity: 1; }
+    .wish-btn.active, .wish-btn:hover { color: var(--red); border-color: rgba(240,80,96,0.3); }
+
+    .prod-body { padding: 14px; flex: 1; display: flex; flex-direction: column; }
+    .prod-cat { font-size: 10px; font-weight: 500; letter-spacing: 1.5px; text-transform: uppercase; color: var(--accent); margin-bottom: 5px; }
+    .prod-name { font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 600; color: var(--text); line-height: 1.3; margin-bottom: 6px; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; min-height:34px; }
+    .prod-desc { font-size: 11px; color: var(--text-dim); line-height: 1.5; margin-bottom: 10px; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+    .prod-footer { display:flex; align-items:center; justify-content:space-between; margin-top:auto; padding-top:10px; border-top:1px solid var(--border); }
+    .prod-price { font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 700; color: var(--accent); }
+    .prod-price-old { font-size: 11px; color: var(--text-faint); text-decoration: line-through; display:block; }
+    .prod-add-btn {
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      background: rgba(240,192,64,0.1);
+      border: 1px solid rgba(240,192,64,0.2);
+      color: var(--accent);
+      font-size: 13px;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: all 0.2s;
+    }
+    .prod-add-btn:hover { background: var(--accent); color: #0a0a0f; transform: scale(1.1); }
+
+    /* ── PRODUCT MODAL ── */
+    .prod-modal { max-width: 680px; }
+    .modal-img-wrap {
+      width: 100%;
+      aspect-ratio: 16/9;
+      background: var(--surface2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      position: relative;
+    }
+    .modal-img-wrap img { width:100%; height:100%; object-fit:cover; }
+    .modal-close {
+      position: absolute;
+      top: 14px;
+      right: 14px;
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      background: rgba(10,10,15,0.8);
+      border: 1px solid var(--border);
+      color: var(--text);
+      font-size: 14px;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.2s;
+      z-index: 2;
+    }
+    .modal-close:hover { background: rgba(10,10,15,0.95); }
+    .modal-body { padding: 28px; }
+    .modal-cat { font-size: 10px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: var(--accent); margin-bottom: 8px; }
+    .modal-name { font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 800; color: var(--text); margin-bottom: 16px; }
+    .modal-desc { font-size: 14px; color: var(--text-dim); line-height: 1.7; margin-bottom: 20px; }
+    .modal-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+    .modal-tile { background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; }
+    .modal-tile-label { font-size: 10px; letter-spacing: 1.2px; text-transform: uppercase; color: var(--text-faint); margin-bottom: 4px; }
+    .modal-tile-val { font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 700; color: var(--text); }
+    .modal-actions { display: flex; gap: 12px; align-items: center; }
+    .modal-price { font-family: 'Syne', sans-serif; font-size: 26px; font-weight: 800; color: var(--accent); }
+
+    /* ── PAGINATION ── */
+    .pagination {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      margin-top: 40px;
+    }
+    .page-btn {
+      width: 36px; height: 36px;
+      border-radius: 8px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text-dim);
+      font-family: 'Syne', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: all 0.18s;
+    }
+    .page-btn:hover { border-color: rgba(240,192,64,0.3); color: var(--text); }
+    .page-btn.active { background: var(--accent); border-color: var(--accent); color: #0a0a0f; }
+    .page-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 1200px) { .products-grid { grid-template-columns: repeat(3,1fr); } }
+    @media (max-width: 1024px) { .shop-layout { grid-template-columns: 1fr; } .filters-panel { position: static; } }
+    @media (max-width: 768px) { .shop-layout { padding: 0 20px 60px; } .products-grid { grid-template-columns: repeat(2,1fr); } .modal-grid { grid-template-columns: 1fr 1fr; } }
+    @media (max-width: 480px) { .products-grid { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+
+<!-- ══ HEADER ══ -->
+<header>
+  <div class="header-inner">
+    <a href="index.html" class="logo">
+      <div class="logo-mark"><i class="fas fa-infinity"></i></div>
+      <div>
+        <div class="logo-text">Infinity Store</div>
+        <span class="logo-sub">Antanimena · Antananarivo</span>
+      </div>
+    </a>
+    <nav class="nav-links" id="navLinks">
+      <a href="index.html" class="nav-link">Accueil</a>
+      <a href="reseau.html" class="nav-link">Réseau</a>
+      <a href="accessoires.html" class="nav-link active">Accessoires</a>
+      <a href="astuces.html" class="nav-link">Astuces</a>
+      <a href="contact.html" class="nav-link">Contact</a>
+    </nav>
+    <div class="header-right">
+      <a href="contact.html" class="header-contact-btn"><i class="fas fa-phone"></i><span>Contact</span></a>
+      <button class="btn-admin" onclick="openLoginModal()"><i class="fas fa-lock"></i> Admin</button>
+      <button class="nav-burger" id="navBurger" onclick="toggleNav()"><i class="fas fa-bars"></i></button>
+    </div>
+  </div>
+</header>
+
+<!-- ══ PAGE HERO ══ -->
+<div class="page-hero">
+  <div class="page-hero-inner">
+    <div class="page-eyebrow">Informatique & périphériques</div>
+    <h1 class="page-title">Accessoires</h1>
+    <p class="page-desc">Clavier, souris, câbles, RAM, SSD, webcams, chargeurs et plus. Filtrez par catégorie ou prix.</p>
+  </div>
+</div>
+
+<!-- ══ SHOP LAYOUT ══ -->
+<div class="shop-layout">
+
+  <!-- Sidebar Filters -->
+  <div class="filters-panel">
+    <div class="filters-header">
+      <div class="filters-title"><i class="fas fa-sliders-h"></i> Filtres</div>
+      <button class="clear-btn" onclick="clearAllFilters()">Tout effacer</button>
+    </div>
+
+    <div class="filter-section">
+      <div class="filter-section-title">Catégorie</div>
+      <div id="catFilters"></div>
+    </div>
+
+    <div class="filter-section">
+      <div class="filter-section-title">Prix maximum</div>
+      <div class="price-range-display">
+        <span class="price-min">0 Ar</span>
+        <span class="price-max" id="priceMaxDisplay">2 000 000 Ar</span>
+      </div>
+      <input type="range" id="priceRange" min="0" max="2000000" step="10000" value="2000000" oninput="onPriceChange(this.value)">
+    </div>
+
+    <div class="filter-section">
+      <div class="filter-section-title">Disponibilité</div>
+      <label class="filter-check" onclick="toggleDispo('disponible', this)">
+        <div class="check-box"><i class="fas fa-check"></i></div>
+        <div class="check-label">En stock</div>
+      </label>
+      <label class="filter-check" onclick="toggleDispo('commande', this)">
+        <div class="check-box"><i class="fas fa-check"></i></div>
+        <div class="check-label">Sur commande</div>
+      </label>
+    </div>
+  </div>
+
+  <!-- Main shop -->
+  <div class="shop-main">
+    <div class="shop-topbar">
+      <div class="search-wrap">
+        <i class="fas fa-search"></i>
+        <input type="text" id="searchInput" placeholder="Rechercher un accessoire…" oninput="filterAll()">
+      </div>
+      <div class="sort-wrap">
+        <select id="sortSelect" onchange="filterAll()">
+          <option value="recent">Nouveautés</option>
+          <option value="price_asc">Prix croissant</option>
+          <option value="price_desc">Prix décroissant</option>
+          <option value="az">A → Z</option>
+        </select>
+      </div>
+      <div class="view-toggle">
+        <button class="view-btn active" id="gridBtn" onclick="setView('grid')" title="Grille"><i class="fas fa-th"></i></button>
+        <button class="view-btn" id="listBtn" onclick="setView('list')" title="Liste"><i class="fas fa-list"></i></button>
+      </div>
+    </div>
+
+    <div class="active-filters" id="activeFilters"></div>
+
+    <div style="display:flex;align-items:center;margin-bottom:16px;">
+      <div style="font-size:13px;color:var(--text-dim);" id="resultCount"><strong style="font-family:'Syne',sans-serif;color:var(--text);">0</strong> produit(s)</div>
+    </div>
+
+    <div class="products-grid" id="productsGrid">
+      <div class="loader-wrap"><div class="spinner"></div><span>Chargement…</span></div>
+    </div>
+
+    <div class="pagination" id="pagination"></div>
+  </div>
+
+</div>
+
+<!-- ══ PRODUCT MODAL ══ -->
+<div class="modal-overlay" id="productModal" onclick="closeProdOnOutside(event)">
+  <div class="modal-box prod-modal">
+    <div class="modal-img-wrap" id="modalImgWrap">
+      <button class="modal-close" onclick="closeProdModal()"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="modal-cat" id="mCat"></div>
+      <div class="modal-name" id="mName"></div>
+      <div class="modal-desc" id="mDesc"></div>
+      <div class="modal-grid" id="mGrid"></div>
+      <div class="modal-actions">
+        <div>
+          <div class="modal-price" id="mPrice"></div>
+          <div id="mPriceOld" style="font-size:12px;color:var(--text-faint);text-decoration:line-through;"></div>
+        </div>
+        <a href="contact.html" style="margin-left:auto;" class="btn-primary" style="display:inline-flex;">
+          <i class="fas fa-phone"></i> Demander le prix
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ LOGIN MODAL ══ -->
+<div class="modal-overlay" id="loginModal" onclick="closeLoginOnOutside(event)">
+  <div class="modal-box" style="max-width:420px;">
+    <div style="padding:36px;">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:28px;">
+        <div class="logo-mark" style="width:40px;height:40px;"><i class="fas fa-infinity"></i></div>
+        <div>
+          <div style="font-family:'Syne',sans-serif;font-size:18px;font-weight:800;color:var(--text);">Admin</div>
+          <div style="font-size:12px;color:var(--text-dim);">Infinity Store</div>
+        </div>
+        <button onclick="closeLoginModal()" style="margin-left:auto;background:none;border:none;color:var(--text-dim);font-size:18px;cursor:pointer;"><i class="fas fa-times"></i></button>
+      </div>
+      <div id="loginError" class="error-msg" style="display:none;"></div>
+      <div class="form-group">
+        <label class="form-label">Mot de passe</label>
+        <div class="input-wrap">
+          <i class="fas fa-lock input-icon"></i>
+          <input type="password" id="adminPassword" class="form-input has-icon" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()">
+        </div>
+      </div>
+      <button class="btn-admin" style="width:100%;justify-content:center;height:44px;border-radius:var(--radius-sm);" onclick="doLogin()">
+        <i class="fas fa-sign-in-alt"></i> Accéder
+      </button>
+    </div>
+  </div>
+</div>
+
+<script src="assets/shared.js"></script>
+<script>
+let allProds = [];
+let filteredProds = [];
+let activeCats = new Set();
+let activeDispos = new Set();
+let maxPrice = 2000000;
+let currentView = 'grid';
+const PAGE_SIZE = 12;
+let currentPage = 1;
+
+/* ── LOAD ── */
+async function loadProds() {
+  try {
+    const data = await sbFetch('accessoires?order=created_at.desc&select=*');
+    allProds = data || [];
+  } catch(e) {
+    allProds = DEMO_ACCESSOIRES;
+  }
+  buildCatFilters();
+  filterAll();
+}
+
+/* ── CAT FILTERS ── */
+function buildCatFilters() {
+  const counts = {};
+  allProds.forEach(p => { counts[p.categorie] = (counts[p.categorie]||0)+1; });
+  const cats = Object.keys(counts).sort();
+  const container = document.getElementById('catFilters');
+  container.innerHTML = cats.map(c => `
+    <label class="filter-check" onclick="toggleCat('${esc(c)}',this)">
+      <div class="check-box"><i class="fas fa-check"></i></div>
+      <div class="check-label">${esc(c)}</div>
+      <span class="check-count">${counts[c]}</span>
+    </label>`).join('');
+}
+
+function toggleCat(cat, el) {
+  el.classList.toggle('checked');
+  if (activeCats.has(cat)) activeCats.delete(cat);
+  else activeCats.add(cat);
+  currentPage = 1;
+  filterAll();
+}
+
+function toggleDispo(d, el) {
+  el.classList.toggle('checked');
+  if (activeDispos.has(d)) activeDispos.delete(d);
+  else activeDispos.add(d);
+  currentPage = 1;
+  filterAll();
+}
+
+function onPriceChange(val) {
+  maxPrice = parseInt(val);
+  document.getElementById('priceMaxDisplay').textContent = Number(maxPrice).toLocaleString('fr-MG') + ' Ar';
+  currentPage = 1;
+  filterAll();
+}
+
+function clearAllFilters() {
+  activeCats.clear();
+  activeDispos.clear();
+  maxPrice = 2000000;
+  document.getElementById('priceRange').value = 2000000;
+  document.getElementById('priceMaxDisplay').textContent = '2 000 000 Ar';
+  document.querySelectorAll('.filter-check').forEach(el => el.classList.remove('checked'));
+  document.getElementById('searchInput').value = '';
+  currentPage = 1;
+  filterAll();
+}
+
+/* ── FILTER ── */
+function filterAll() {
+  const q = (document.getElementById('searchInput').value||'').toLowerCase();
+  const sort = document.getElementById('sortSelect').value;
+
+  let list = allProds.filter(p => {
+    if (activeCats.size && !activeCats.has(p.categorie)) return false;
+    if (activeDispos.size && !activeDispos.has(p.statut)) return false;
+    if (p.prix && p.prix > maxPrice) return false;
+    if (q && !(p.nom||'').toLowerCase().includes(q) && !(p.description||'').toLowerCase().includes(q)) return false;
+    return true;
+  });
+
+  if (sort === 'price_asc')  list = list.slice().sort((a,b) => (a.prix||0)-(b.prix||0));
+  if (sort === 'price_desc') list = list.slice().sort((a,b) => (b.prix||0)-(a.prix||0));
+  if (sort === 'az')         list = list.slice().sort((a,b) => (a.nom||'').localeCompare(b.nom||''));
+
+  filteredProds = list;
+  renderActiveChips();
+  renderPage();
+}
+
+function renderActiveChips() {
+  const el = document.getElementById('activeFilters');
+  const chips = [];
+  activeCats.forEach(c => chips.push(`<div class="active-chip">${esc(c)} <button onclick="removeCatFilter('${esc(c)}')">✕</button></div>`));
+  activeDispos.forEach(d => chips.push(`<div class="active-chip">${d === 'disponible' ? 'En stock' : 'Sur commande'} <button onclick="removeDispoFilter('${esc(d)}')">✕</button></div>`));
+  el.innerHTML = chips.join('');
+}
+
+function removeCatFilter(cat) {
+  activeCats.delete(cat);
+  document.querySelectorAll('.filter-check').forEach(el => {
+    const label = el.querySelector('.check-label');
+    if (label && label.textContent.trim() === cat) el.classList.remove('checked');
+  });
+  filterAll();
+}
+
+function removeDispoFilter(d) {
+  activeDispos.delete(d);
+  document.querySelectorAll('.filter-check').forEach(el => {
+    const label = el.querySelector('.check-label');
+    if (label && ((d==='disponible' && label.textContent.trim()==='En stock') || (d==='commande' && label.textContent.trim()==='Sur commande')))
+      el.classList.remove('checked');
+  });
+  filterAll();
+}
+
+/* ── PAGINATION ── */
+function renderPage() {
+  const total = filteredProds.length;
+  const pages = Math.ceil(total / PAGE_SIZE);
+  if (currentPage > pages) currentPage = 1;
+  const start = (currentPage - 1) * PAGE_SIZE;
+  const page = filteredProds.slice(start, start + PAGE_SIZE);
+
+  document.getElementById('resultCount').innerHTML = `<strong style="font-family:'Syne',sans-serif;color:var(--text);">${total}</strong> produit(s)`;
+
+  renderProds(page);
+  renderPagination(pages);
+}
+
+function renderPagination(pages) {
+  const el = document.getElementById('pagination');
+  if (pages <= 1) { el.innerHTML = ''; return; }
+  let html = `<button class="page-btn" onclick="goPage(${currentPage-1})" ${currentPage===1?'disabled':''}><i class="fas fa-chevron-left"></i></button>`;
+  for (let i = 1; i <= pages; i++) {
+    if (pages > 7 && Math.abs(i - currentPage) > 2 && i !== 1 && i !== pages) {
+      if (i === 2 || i === pages-1) html += '<span style="color:var(--text-faint);padding:0 4px;">…</span>';
+      continue;
+    }
+    html += `<button class="page-btn ${i===currentPage?'active':''}" onclick="goPage(${i})">${i}</button>`;
+  }
+  html += `<button class="page-btn" onclick="goPage(${currentPage+1})" ${currentPage===pages?'disabled':''}><i class="fas fa-chevron-right"></i></button>`;
+  el.innerHTML = html;
+}
+
+function goPage(n) {
+  currentPage = n;
+  renderPage();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+/* ── RENDER PRODS ── */
+const catIcons = { Laptop:'fas fa-laptop', Clavier:'fas fa-keyboard', Souris:'fas fa-mouse', Écran:'fas fa-desktop', RAM:'fas fa-memory', SSD:'fas fa-hdd', USB:'fas fa-usb', Câble:'fas fa-plug', Webcam:'fas fa-video', Chargeur:'fas fa-charging-station', Casque:'fas fa-headphones', Imprimante:'fas fa-print', Sac:'fas fa-briefcase', default:'fas fa-box' };
+
+function getIcon(cat) { return catIcons[cat] || catIcons.default; }
+
+function renderProds(list) {
+  const grid = document.getElementById('productsGrid');
+  if (!list.length) {
+    grid.innerHTML = `<div class="loader-wrap" style="grid-column:1/-1;"><i class="fas fa-search" style="font-size:36px;color:var(--text-faint);margin-bottom:12px;"></i><span>Aucun produit trouvé</span></div>`;
+    return;
+  }
+  const isList = currentView === 'list';
+  grid.innerHTML = list.map((p, i) => {
+    const icon = getIcon(p.categorie);
+    const idx = allProds.indexOf(p);
+    const pct = discountPct(p.prix_old, p.prix);
+    let ribClass = p.badge === 'new' ? 'ribbon-new' : p.badge === 'hot' ? 'ribbon-hot' : '';
+    let ribLabel = p.badge === 'new' ? 'Nouveau' : p.badge === 'hot' ? 'Populaire' : '';
+    if (pct > 0) { ribClass = 'ribbon-promo'; ribLabel = `-${pct}%`; }
+    if (isList) {
+      return `
+      <div class="prod-card" style="animation-delay:${i*0.03}s" onclick="openProdModal(${idx})">
+        <div class="prod-img">
+          ${p.image_url ? `<img src="${esc(p.image_url)}" alt="${esc(p.nom)}" loading="lazy">` : `<div class="prod-img-icon"><i class="${icon}"></i></div>`}
+          ${ribClass ? `<span class="prod-ribbon ${ribClass}">${ribLabel}</span>` : ''}
+        </div>
+        <div class="prod-body">
+          <div class="prod-main">
+            <div class="prod-cat">${esc(p.categorie)}</div>
+            <div class="prod-name">${esc(p.nom)}</div>
+            <div class="prod-desc">${esc(p.description||'')}</div>
+          </div>
+          <div>
+            ${pct > 0 ? `<div class="prod-price-old">${formatPrice(p.prix_old)}</div>` : ''}
+            <div class="prod-price">${p.prix ? formatPrice(p.prix) : 'Sur devis'}${pct > 0 ? ` <span class="card-discount-tag" style="display:inline-block;background:var(--red);color:#fff;font-size:10px;font-weight:700;padding:2px 7px;border-radius:999px;margin-left:4px;vertical-align:middle;">-${pct}%</span>` : ''}</div>
+          </div>
+          <button class="prod-add-btn" onclick="event.stopPropagation();openProdModal(${idx})"><i class="fas fa-eye"></i></button>
+        </div>
+      </div>`;
+    }
+    return `
+    <div class="prod-card" style="animation-delay:${i*0.03}s" onclick="openProdModal(${idx})">
+      <div class="prod-img">
+        ${p.image_url ? `<img src="${esc(p.image_url)}" alt="${esc(p.nom)}" loading="lazy">` : `<div class="prod-img-icon"><i class="${icon}"></i></div>`}
+        ${ribClass ? `<span class="prod-ribbon ${ribClass}">${ribLabel}</span>` : ''}
+        <button class="wish-btn" onclick="event.stopPropagation();toggleWish(this)"><i class="fas fa-heart"></i></button>
+      </div>
+      <div class="prod-body">
+        <div class="prod-cat">${esc(p.categorie)}</div>
+        <div class="prod-name">${esc(p.nom)}</div>
+        <div class="prod-footer">
+          <div>
+            ${pct > 0 ? `<div class="prod-price-old">${formatPrice(p.prix_old)}</div>` : ''}
+            <div class="prod-price">${p.prix ? formatPrice(p.prix) : 'Sur devis'}${pct > 0 ? ` <span class="card-discount-tag" style="display:inline-block;background:var(--red);color:#fff;font-size:10px;font-weight:700;padding:2px 7px;border-radius:999px;margin-left:4px;vertical-align:middle;">-${pct}%</span>` : ''}</div>
+          </div>
+          <button class="prod-add-btn"><i class="fas fa-eye"></i></button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function toggleWish(btn) { btn.classList.toggle('active'); }
+
+/* ── VIEW TOGGLE ── */
+function setView(v) {
+  currentView = v;
+  const grid = document.getElementById('productsGrid');
+  grid.classList.toggle('list-view', v === 'list');
+  document.getElementById('gridBtn').classList.toggle('active', v === 'grid');
+  document.getElementById('listBtn').classList.toggle('active', v === 'list');
+  renderPage();
+}
+
+/* ── MODAL ── */
+function openProdModal(idx) {
+  const p = allProds[idx];
+  if (!p) return;
+  const icon = getIcon(p.categorie);
+  const wrap = document.getElementById('modalImgWrap');
+  wrap.innerHTML = `<button class="modal-close" onclick="closeProdModal()"><i class="fas fa-times"></i></button>`;
+  if (p.image_url) {
+    const img = document.createElement('img');
+    img.src = p.image_url; img.alt = p.nom;
+    wrap.prepend(img);
+  } else {
+    const ic = document.createElement('i');
+    ic.className = icon;
+    ic.style.cssText = 'font-size:64px;color:var(--text-faint);';
+    wrap.prepend(ic);
+  }
+  document.getElementById('mCat').textContent = p.categorie || '';
+  document.getElementById('mName').textContent = p.nom || '';
+  document.getElementById('mDesc').textContent = p.description || '';
+  const pct = discountPct(p.prix_old, p.prix);
+  document.getElementById('mPrice').innerHTML = (p.prix ? formatPrice(p.prix) : 'Sur devis') + (pct > 0 ? ` <span style="display:inline-block;background:var(--red);color:#fff;font-size:12px;font-weight:700;padding:3px 9px;border-radius:999px;margin-left:8px;vertical-align:middle;">-${pct}%</span>` : '');
+  document.getElementById('mPriceOld').textContent = pct > 0 ? formatPrice(p.prix_old) : '';
+
+  const specs = [
+    ['Marque', p.marque], ['Référence', p.reference], ['Statut', {disponible:'En stock', commande:'Sur commande', rupture:'Rupture'}[p.statut]||p.statut]
+  ].filter(([,v]) => v);
+  document.getElementById('mGrid').innerHTML = specs.map(([l,v]) => `<div class="modal-tile"><div class="modal-tile-label">${l}</div><div class="modal-tile-val">${esc(v)}</div></div>`).join('');
+
+  document.getElementById('productModal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeProdModal() {
+  document.getElementById('productModal').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function closeProdOnOutside(e) { if (e.target === e.currentTarget) closeProdModal(); }
+
+/* ── DEMO DATA ── */
+const DEMO_ACCESSOIRES = [
+  { id:1, nom:'Clavier mécanique Logitech MX Keys', categorie:'Clavier', description:'Clavier sans fil, rétroéclairé, multi-appareils. Switches tactiles.', prix:165000, prix_old:205000, statut:'disponible' },
+  { id:2, nom:'Souris Logitech MX Master 3', categorie:'Souris', description:'Souris ergonomique sans fil, DPI adjustable, USB-C.', prix:195000, statut:'disponible', badge:'hot' },
+  { id:3, nom:'RAM Crucial 16GB DDR4 3200MHz', categorie:'RAM', description:'Module SO-DIMM DDR4 pour laptop, 3200 MHz, CL22.', prix:95000, statut:'disponible', badge:'new' },
+  { id:4, nom:'RAM Kingston 8GB DDR4 2666MHz', categorie:'RAM', description:'Module DDR4 DIMM pour desktop, 2666 MHz.', prix:48000, statut:'disponible' },
+  { id:5, nom:'SSD Samsung 970 EVO 500GB', categorie:'SSD', description:'NVMe M.2, 3500 Mo/s en lecture, garantie 5 ans.', prix:185000, statut:'disponible' },
+  { id:6, nom:'SSD Kingston A2000 1TB', categorie:'SSD', description:'NVMe M.2, 2200 Mo/s, rapport qualité/prix excellent.', prix:280000, statut:'commande' },
+  { id:7, nom:'Écran Dell P2422H 24"', categorie:'Écran', description:'Full HD IPS, 60Hz, dalle sans scintillement, pivot 90°.', prix:480000, statut:'disponible' },
+  { id:8, nom:'Webcam Logitech C920', categorie:'Webcam', description:'Full HD 1080p, autofocus, micro stéréo intégré.', prix:120000, statut:'disponible', badge:'hot' },
+  { id:9, nom:'Chargeur USB-C 65W universel', categorie:'Chargeur', description:'Charge rapide PD 65W, compatible laptops/smartphones.', prix:45000, statut:'disponible' },
+  { id:10, nom:'Hub USB 7 ports USB 3.0', categorie:'USB', description:'Hub USB-A 3.0, 7 ports, alimentation externe.', prix:35000, statut:'disponible' },
+  { id:11, nom:'Câble HDMI 2.0 — 2m', categorie:'Câble', description:'4K 60Hz, 18 Gbps, compatible HDR, connecteurs dorés.', prix:18000, statut:'disponible' },
+  { id:12, nom:'Casque Sony WH-1000XM4', categorie:'Casque', description:'Réduction de bruit active, 30h autonomie, Bluetooth 5.', prix:650000, statut:'commande' },
+  { id:13, nom:'Imprimante HP LaserJet M110w', categorie:'Imprimante', description:'Laser monochrome sans fil, 20 ppm, USB et WiFi.', prix:380000, statut:'disponible' },
+  { id:14, nom:'Sac laptop 15.6" Targus', categorie:'Sac', description:'Sac à dos rembourré, USB de charge, imperméable.', prix:55000, statut:'disponible' },
+  { id:15, nom:'Tapis de souris XXL', categorie:'Souris', description:'Grand format 90x40cm, base antidérapante, surface lisse.', prix:22000, statut:'disponible' },
+  { id:16, nom:'Câble USB-C vers USB-A 2m', categorie:'Câble', description:'Nylon tressé, charge rapide 3A, transfert 480 Mbps.', prix:12000, statut:'disponible' },
+];
+
+loadProds();
+
+// Check URL param promo
+const params = new URLSearchParams(window.location.search);
+if (params.get('promo')) {
+  // Afficher les produits en promo
+  setTimeout(() => {
+    document.getElementById('searchInput').value = '';
+    filterAll();
+  }, 500);
+}
+</script>
+</body>
+</html>

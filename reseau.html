@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Équipements Réseau — Infinity Store</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/shared.css">
+  <style>
+    /* ── LAYOUT ── */
+    .page-content {
+      max-width: 1600px;
+      margin: 0 auto;
+      padding: 0 40px 80px;
+      display: grid;
+      grid-template-columns: 1fr 380px;
+      gap: 40px;
+      align-items: start;
+    }
+
+    /* ── FILTER BAR ── */
+    .filter-bar {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+      margin-bottom: 28px;
+    }
+    .filter-search {
+      flex: 1;
+      min-width: 200px;
+      position: relative;
+    }
+    .filter-search i { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--text-faint); font-size: 13px; pointer-events: none; }
+    .filter-search input {
+      width: 100%;
+      height: 42px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 0 16px 0 40px;
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .filter-search input::placeholder { color: var(--text-faint); }
+    .filter-search input:focus { border-color: rgba(240,192,64,0.4); box-shadow: 0 0 0 3px rgba(240,192,64,0.07); }
+
+    .filter-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 16px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--text-dim);
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.18s;
+      white-space: nowrap;
+    }
+    .filter-pill:hover { border-color: rgba(240,192,64,0.3); color: var(--text); }
+    .filter-pill.active { background: var(--accent); border-color: var(--accent); color: #0a0a0f; font-weight: 600; }
+
+    /* ── PRODUCTS GRID ── */
+    .products-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+    }
+
+    .prod-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      transition: transform 0.22s cubic-bezier(.22,.68,0,1.2), border-color 0.2s, box-shadow 0.22s;
+      animation: cardIn 0.3s ease both;
+    }
+    .prod-card:hover {
+      transform: translateY(-4px);
+      border-color: rgba(240,192,64,0.25);
+      box-shadow: 0 14px 36px rgba(0,0,0,0.45);
+    }
+    @keyframes cardIn { from { opacity:0; transform:translateY(14px); } to { opacity:1; transform:translateY(0); } }
+
+    .prod-img {
+      width: 100%;
+      aspect-ratio: 4/3;
+      background: var(--surface2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      position: relative;
+    }
+    .prod-img img { width:100%; height:100%; object-fit:cover; transition: transform 0.3s; }
+    .prod-card:hover .prod-img img { transform: scale(1.04); }
+    .prod-img-icon { color: var(--text-faint); font-size: 36px; }
+    .prod-badge {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      padding: 3px 10px;
+      border-radius: 999px;
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .badge-dispo { background: rgba(48,208,144,0.85); color: #0a0a0f; }
+    .badge-commande { background: rgba(240,144,48,0.85); color: #0a0a0f; }
+    .badge-rupture { background: rgba(240,80,96,0.85); color: #fff; }
+
+    .prod-body { padding: 16px; }
+    .prod-cat { font-size: 10px; font-weight: 500; letter-spacing: 1.5px; text-transform: uppercase; color: var(--accent); margin-bottom: 5px; }
+    .prod-name { font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700; color: var(--text); line-height: 1.3; margin-bottom: 8px; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; min-height:36px; }
+    .prod-specs { font-size: 11px; color: var(--text-dim); line-height: 1.55; margin-bottom: 12px; }
+    .prod-footer { display:flex; align-items:center; justify-content:space-between; border-top:1px solid var(--border); padding-top:12px; }
+    .prod-price { font-family: 'Syne', sans-serif; font-size: 17px; font-weight: 700; color: var(--accent); }
+    .prod-devis-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 14px;
+      border-radius: 999px;
+      border: 1px solid rgba(240,192,64,0.25);
+      background: rgba(240,192,64,0.08);
+      color: var(--accent);
+      font-family: 'Syne', sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .prod-devis-btn:hover { background: var(--accent); color: #0a0a0f; }
+
+    /* ── SIDEBAR DEVIS ── */
+    .devis-panel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      position: sticky;
+      top: 88px;
+      overflow: hidden;
+    }
+    .devis-header {
+      padding: 24px 28px;
+      border-bottom: 1px solid var(--border);
+      background: rgba(240,192,64,0.04);
+    }
+    .devis-header-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+    .devis-header-sub { font-size: 12px; color: var(--text-dim); }
+    .devis-form { padding: 24px 28px; }
+
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+    .devis-items {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 12px;
+      min-height: 80px;
+      margin-bottom: 4px;
+    }
+    .devis-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .devis-item:last-child { border-bottom: none; }
+    .devis-item-name { flex: 1; font-size: 12px; color: var(--text); }
+    .devis-item-remove {
+      background: none;
+      border: none;
+      color: var(--text-faint);
+      cursor: pointer;
+      font-size: 12px;
+      padding: 4px;
+      transition: color 0.2s;
+    }
+    .devis-item-remove:hover { color: var(--red); }
+    .devis-empty { font-size: 12px; color: var(--text-faint); text-align: center; padding: 12px; }
+
+    .devis-submit {
+      width: 100%;
+      height: 48px;
+      background: var(--accent);
+      border: none;
+      border-radius: var(--radius-sm);
+      font-family: 'Syne', sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      color: #0a0a0f;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin-top: 16px;
+    }
+    .devis-submit:hover { background: #ffd060; box-shadow: 0 6px 20px rgba(240,192,64,0.3); }
+
+    .success-panel {
+      display: none;
+      text-align: center;
+      padding: 40px 28px;
+    }
+    .success-icon {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      background: rgba(48,208,144,0.12);
+      border: 1px solid rgba(48,208,144,0.25);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      color: var(--green);
+      margin: 0 auto 20px;
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 1200px) {
+      .products-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 1024px) {
+      .page-content { grid-template-columns: 1fr; }
+      .devis-panel { position: static; }
+    }
+    @media (max-width: 640px) {
+      .page-content { padding: 0 20px 60px; }
+      .products-grid { grid-template-columns: 1fr; }
+      .form-row { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══ HEADER ══ -->
+<header>
+  <div class="header-inner">
+    <a href="index.html" class="logo">
+      <div class="logo-mark"><i class="fas fa-infinity"></i></div>
+      <div>
+        <div class="logo-text">Infinity Store</div>
+        <span class="logo-sub">Antanimena · Antananarivo</span>
+      </div>
+    </a>
+    <nav class="nav-links" id="navLinks">
+      <a href="index.html" class="nav-link">Accueil</a>
+      <a href="reseau.html" class="nav-link active">Réseau</a>
+      <a href="accessoires.html" class="nav-link">Accessoires</a>
+      <a href="astuces.html" class="nav-link">Astuces</a>
+      <a href="contact.html" class="nav-link">Contact</a>
+    </nav>
+    <div class="header-right">
+      <a href="contact.html" class="header-contact-btn"><i class="fas fa-phone"></i><span>Contact</span></a>
+      <button class="btn-admin" onclick="openLoginModal()"><i class="fas fa-lock"></i> Admin</button>
+      <button class="nav-burger" id="navBurger" onclick="toggleNav()"><i class="fas fa-bars"></i></button>
+    </div>
+  </div>
+</header>
+
+<!-- ══ PAGE HERO ══ -->
+<div class="page-hero">
+  <div class="page-hero-inner">
+    <div class="page-eyebrow">Infrastructure & connectivité</div>
+    <h1 class="page-title">Équipements Réseau</h1>
+    <p class="page-desc">Routeurs, switches, points d'accès, câbles et plus. Demandez votre devis directement en ligne.</p>
+  </div>
+</div>
+
+<!-- ══ CONTENT ══ -->
+<div class="page-content">
+
+  <!-- Left: Products -->
+  <div>
+    <!-- Filters -->
+    <div class="filter-bar">
+      <div class="filter-search">
+        <i class="fas fa-search"></i>
+        <input type="text" id="searchInput" placeholder="Rechercher un équipement…" oninput="filterProds()">
+      </div>
+      <button class="filter-pill active" data-cat="all" onclick="setCat('all',this)"><i class="fas fa-th-large" style="font-size:10px;"></i> Tous</button>
+      <button class="filter-pill" data-cat="routeur" onclick="setCat('routeur',this)"><i class="fas fa-wifi" style="font-size:10px;"></i> Routeurs</button>
+      <button class="filter-pill" data-cat="switch" onclick="setCat('switch',this)"><i class="fas fa-network-wired" style="font-size:10px;"></i> Switches</button>
+      <button class="filter-pill" data-cat="ap" onclick="setCat('ap',this)"><i class="fas fa-broadcast-tower" style="font-size:10px;"></i> Points d'accès</button>
+      <button class="filter-pill" data-cat="cable" onclick="setCat('cable',this)"><i class="fas fa-plug" style="font-size:10px;"></i> Câbles</button>
+      <button class="filter-pill" data-cat="autre" onclick="setCat('autre',this)"><i class="fas fa-ellipsis-h" style="font-size:10px;"></i> Autres</button>
+    </div>
+
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
+      <div class="result-count" id="resultCount" style="font-size:13px;color:var(--text-dim);"><strong style="font-family:'Syne',sans-serif;color:var(--text);">0</strong> produit(s)</div>
+    </div>
+
+    <div class="products-grid" id="productsGrid">
+      <div class="loader-wrap"><div class="spinner"></div><span>Chargement…</span></div>
+    </div>
+  </div>
+
+  <!-- Right: Devis panel -->
+  <div class="devis-panel" id="devisPanel">
+    <div class="devis-header">
+      <div style="font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--accent);margin-bottom:8px;">Gratuit & sans engagement</div>
+      <div class="devis-header-title">Demande de devis</div>
+      <div class="devis-header-sub">Ajoutez des produits à votre devis, remplissez vos coordonnées et envoyez.</div>
+    </div>
+
+    <div class="devis-form" id="devisForm">
+      <!-- Panier devis -->
+      <div class="form-group">
+        <label class="form-label">Produits sélectionnés</label>
+        <div class="devis-items" id="devisItems">
+          <div class="devis-empty">Cliquez sur "Devis" sur un produit pour l'ajouter.</div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Nom complet *</label>
+        <div class="input-wrap">
+          <i class="fas fa-user input-icon"></i>
+          <input type="text" class="form-input has-icon" id="devisNom" placeholder="Votre nom">
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group" style="margin-bottom:0;">
+          <label class="form-label">Téléphone *</label>
+          <div class="input-wrap">
+            <i class="fas fa-phone input-icon"></i>
+            <input type="tel" class="form-input has-icon" id="devisTel" placeholder="+261 34…">
+          </div>
+        </div>
+        <div class="form-group" style="margin-bottom:0;">
+          <label class="form-label">Email</label>
+          <div class="input-wrap">
+            <i class="fas fa-envelope input-icon"></i>
+            <input type="email" class="form-input has-icon" id="devisEmail" placeholder="email@exemple.com">
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group" style="margin-top:18px;">
+        <label class="form-label">Entreprise / Organisation</label>
+        <div class="input-wrap">
+          <i class="fas fa-building input-icon"></i>
+          <input type="text" class="form-input has-icon" id="devisEntreprise" placeholder="Nom de votre société (optionnel)">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Précisions ou besoins spécifiques</label>
+        <textarea class="form-textarea" id="devisMessage" placeholder="Décrivez votre projet réseau, nombre de postes, superficie…"></textarea>
+      </div>
+
+      <div id="devisError" class="error-msg" style="display:none;"></div>
+      <div id="devisSuccess" class="success-msg" style="display:none;"></div>
+
+      <button class="devis-submit" onclick="submitDevis()">
+        <i class="fas fa-paper-plane"></i> Envoyer ma demande de devis
+      </button>
+    </div>
+
+    <div class="success-panel" id="devisSuccessPanel">
+      <div class="success-icon"><i class="fas fa-check"></i></div>
+      <div style="font-family:'Syne',sans-serif;font-size:18px;font-weight:800;color:var(--text);margin-bottom:8px;">Demande envoyée !</div>
+      <p style="font-size:13px;color:var(--text-dim);line-height:1.6;">
+        Nous avons bien reçu votre demande de devis. Notre équipe vous contactera dans les 24 heures.
+      </p>
+      <button onclick="resetDevis()" style="margin-top:20px;background:var(--surface2);border:1px solid var(--border);border-radius:999px;color:var(--text-dim);padding:10px 24px;font-size:13px;cursor:pointer;">
+        Nouvelle demande
+      </button>
+    </div>
+  </div>
+
+</div>
+
+<!-- ══ LOGIN MODAL ══ -->
+<div class="modal-overlay" id="loginModal" onclick="closeLoginOnOutside(event)">
+  <div class="modal-box" style="max-width:420px;">
+    <div style="padding:36px;">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:28px;">
+        <div class="logo-mark" style="width:40px;height:40px;"><i class="fas fa-infinity"></i></div>
+        <div>
+          <div style="font-family:'Syne',sans-serif;font-size:18px;font-weight:800;color:var(--text);">Admin Panel</div>
+          <div style="font-size:12px;color:var(--text-dim);">Infinity Store</div>
+        </div>
+        <button onclick="closeLoginModal()" style="margin-left:auto;background:none;border:none;color:var(--text-dim);font-size:18px;cursor:pointer;"><i class="fas fa-times"></i></button>
+      </div>
+      <div id="loginError" class="error-msg" style="display:none;"></div>
+      <div class="form-group">
+        <label class="form-label">Mot de passe admin</label>
+        <div class="input-wrap">
+          <i class="fas fa-lock input-icon"></i>
+          <input type="password" id="adminPassword" class="form-input has-icon" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()">
+        </div>
+      </div>
+      <button class="btn-admin" style="width:100%;justify-content:center;height:44px;border-radius:var(--radius-sm);" onclick="doLogin()">
+        <i class="fas fa-sign-in-alt"></i> Accéder
+      </button>
+    </div>
+  </div>
+</div>
+
+<script src="assets/shared.js"></script>
+<script>
+let allProds = [];
+let activeCategory = 'all';
+let devisItems = [];
+
+async function loadProds() {
+  try {
+    const data = await sbFetch('produits_reseau?order=created_at.desc&select=*');
+    allProds = data || [];
+  } catch(e) {
+    allProds = DEMO_RESEAU;
+  }
+  filterProds();
+}
+
+function setCat(cat, el) {
+  activeCategory = cat;
+  document.querySelectorAll('.filter-pill').forEach(b => b.classList.remove('active'));
+  if (el) el.classList.add('active');
+  filterProds();
+}
+
+function filterProds() {
+  const q = (document.getElementById('searchInput').value || '').toLowerCase();
+  let list = allProds.filter(p => {
+    const matchCat = activeCategory === 'all' || p.categorie === activeCategory;
+    if (!matchCat) return false;
+    if (!q) return true;
+    return (p.nom||'').toLowerCase().includes(q) || (p.description||'').toLowerCase().includes(q);
+  });
+  renderProds(list);
+  document.getElementById('resultCount').innerHTML = `<strong style="font-family:'Syne',sans-serif;color:var(--text);">${list.length}</strong> produit(s)`;
+}
+
+function renderProds(list) {
+  const grid = document.getElementById('productsGrid');
+  if (!list.length) {
+    grid.innerHTML = `<div class="loader-wrap" style="grid-column:1/-1;"><i class="fas fa-box-open" style="font-size:36px;color:var(--text-faint);margin-bottom:12px;"></i><span>Aucun produit trouvé</span></div>`;
+    return;
+  }
+  const catIcons = { routeur:'fas fa-wifi', switch:'fas fa-network-wired', ap:'fas fa-broadcast-tower', cable:'fas fa-plug', autre:'fas fa-box' };
+  grid.innerHTML = list.map((p, i) => {
+    const icon = catIcons[p.categorie] || 'fas fa-box';
+    const statusClass = { disponible:'badge-dispo', commande:'badge-commande', rupture:'badge-rupture' }[p.statut] || 'badge-dispo';
+    const statusLabel = { disponible:'Disponible', commande:'Sur commande', rupture:'Rupture' }[p.statut] || 'Disponible';
+    return `
+    <div class="prod-card" style="animation-delay:${i*0.04}s">
+      <div class="prod-img">
+        ${p.image_url
+          ? `<img src="${esc(p.image_url)}" alt="${esc(p.nom)}" loading="lazy">`
+          : `<div class="prod-img-icon"><i class="${icon}"></i></div>`}
+        <span class="prod-badge ${statusClass}">${statusLabel}</span>
+      </div>
+      <div class="prod-body">
+        <div class="prod-cat">${esc(p.categorie||'réseau')}</div>
+        <div class="prod-name">${esc(p.nom)}</div>
+        <div class="prod-specs">${esc(p.description||'')}</div>
+        <div class="prod-footer">
+          <div class="prod-price">${p.prix ? formatPrice(p.prix) : 'Prix sur devis'}</div>
+          <button class="prod-devis-btn" onclick="addToDevis(${JSON.stringify(p.nom).replace(/"/g,'&quot;')})">
+            <i class="fas fa-plus"></i> Devis
+          </button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+/* ── Devis cart ── */
+function addToDevis(nom) {
+  if (devisItems.includes(nom)) { showToast('Déjà dans le devis', 'fas fa-info-circle'); return; }
+  devisItems.push(nom);
+  renderDevisItems();
+  showToast(`Ajouté : ${nom}`);
+  // Scroll to devis on mobile
+  if (window.innerWidth < 1024) document.getElementById('devisPanel').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function removeFromDevis(i) {
+  devisItems.splice(i, 1);
+  renderDevisItems();
+}
+
+function renderDevisItems() {
+  const el = document.getElementById('devisItems');
+  if (!devisItems.length) {
+    el.innerHTML = '<div class="devis-empty">Cliquez sur "Devis" sur un produit pour l\'ajouter.</div>';
+    return;
+  }
+  el.innerHTML = devisItems.map((nom, i) => `
+    <div class="devis-item">
+      <i class="fas fa-check-circle" style="color:var(--green);font-size:12px;"></i>
+      <div class="devis-item-name">${esc(nom)}</div>
+      <button class="devis-item-remove" onclick="removeFromDevis(${i})"><i class="fas fa-times"></i></button>
+    </div>`).join('');
+}
+
+/* ── Submit ── */
+async function submitDevis() {
+  const nom   = document.getElementById('devisNom').value.trim();
+  const tel   = document.getElementById('devisTel').value.trim();
+  const email = document.getElementById('devisEmail').value.trim();
+  const ent   = document.getElementById('devisEntreprise').value.trim();
+  const msg   = document.getElementById('devisMessage').value.trim();
+  const errEl = document.getElementById('devisError');
+
+  errEl.style.display = 'none';
+  if (!nom) { errEl.textContent = 'Veuillez indiquer votre nom.'; errEl.style.display='block'; return; }
+  if (!tel)  { errEl.textContent = 'Veuillez indiquer votre téléphone.'; errEl.style.display='block'; return; }
+
+  const btn = document.querySelector('.devis-submit');
+  btn.disabled = true;
+  btn.innerHTML = '<div class="spinner" style="width:20px;height:20px;border-width:2px;"></div> Envoi…';
+
+  try {
+    await sbFetch('devis', {
+      method: 'POST',
+      body: JSON.stringify({
+        nom, telephone: tel, email, entreprise: ent, message: msg,
+        produits: devisItems.join(', '),
+        statut: 'nouveau',
+        created_at: new Date().toISOString()
+      })
+    });
+    document.getElementById('devisForm').style.display = 'none';
+    document.getElementById('devisSuccessPanel').style.display = 'block';
+    devisItems = [];
+  } catch(e) {
+    errEl.textContent = 'Erreur lors de l\'envoi. Veuillez réessayer ou nous appeler directement.';
+    errEl.style.display = 'block';
+    btn.disabled = false;
+    btn.innerHTML = '<i class="fas fa-paper-plane"></i> Envoyer ma demande de devis';
+  }
+}
+
+function resetDevis() {
+  document.getElementById('devisForm').style.display = 'block';
+  document.getElementById('devisSuccessPanel').style.display = 'none';
+  document.getElementById('devisNom').value = '';
+  document.getElementById('devisTel').value = '';
+  document.getElementById('devisEmail').value = '';
+  document.getElementById('devisEntreprise').value = '';
+  document.getElementById('devisMessage').value = '';
+  document.querySelector('.devis-submit').disabled = false;
+  document.querySelector('.devis-submit').innerHTML = '<i class="fas fa-paper-plane"></i> Envoyer ma demande de devis';
+  renderDevisItems();
+}
+
+/* ── Demo data ── */
+const DEMO_RESEAU = [
+  { id:1, nom:'MikroTik hAP ac³', categorie:'routeur', description:'Routeur WiFi dual-band 802.11ac, 5 ports Gigabit. Idéal PME.', prix:320000, statut:'disponible' },
+  { id:2, nom:'MikroTik hAP ax³ WiFi 6', categorie:'routeur', description:'Routeur WiFi 6, 2.4/5GHz, 5 ports 2.5G. Performances maximales.', prix:420000, statut:'disponible' },
+  { id:3, nom:'Ubiquiti UniFi AP U6 Pro', categorie:'ap', description:'Point d\'accès WiFi 6 4x4 MIMO, jusqu\'à 300 clients simultanés.', prix:580000, statut:'disponible' },
+  { id:4, nom:'Ubiquiti UniFi AP U6 Lite', categorie:'ap', description:'Point d\'accès WiFi 6 compact, idéal domicile ou petit bureau.', prix:280000, statut:'disponible' },
+  { id:5, nom:'TP-Link TL-SG108 Switch 8 ports', categorie:'switch', description:'Switch Gigabit non manageable 8 ports. Plug & Play.', prix:85000, statut:'disponible' },
+  { id:6, nom:'TP-Link TL-SG1024D Switch 24 ports', categorie:'switch', description:'Switch Gigabit 24 ports pour infrastructure réseau entreprise.', prix:210000, statut:'commande' },
+  { id:7, nom:'Câble réseau Cat6 — rouleau 305m', categorie:'cable', description:'Câble Ethernet Cat6 UTP, 305m. Débit jusqu\'à 1 Gbps.', prix:120000, statut:'disponible' },
+  { id:8, nom:'Câble réseau Cat6a blindé — 305m', categorie:'cable', description:'STP Cat6a, 10 Gbps, idéal pour installations professionnelles.', prix:195000, statut:'commande' },
+  { id:9, nom:'MikroTik CRS328 Switch L3', categorie:'switch', description:'Switch Layer 3 manageable 24 ports SFP + 4 SFP+. Fibre et cuivre.', prix:890000, statut:'commande' },
+  { id:10, nom:'NanoStation M5 Ubiquiti', categorie:'autre', description:'Liaison point à point outdoor jusqu\'à 15 km. Idéal liaison bâtiments.', prix:350000, statut:'disponible' },
+  { id:11, nom:'OLT Huawei MA5671A', categorie:'autre', description:'Terminal GPON pour déploiement fibre optique FTTH.', prix:1200000, statut:'commande' },
+  { id:12, nom:'Connecteur RJ45 Cat6 — boîte 100', categorie:'cable', description:'Connecteurs RJ45 de qualité pour câblage structuré Cat6.', prix:18000, statut:'disponible' },
+];
+
+loadProds();
+</script>
+</body>
+</html>

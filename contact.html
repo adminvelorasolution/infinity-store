@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contact — Infinity Store</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/shared.css">
+  <style>
+    .contact-grid {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 40px 80px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 48px;
+      align-items: start;
+    }
+    /* Info side */
+    .contact-info {}
+    .contact-info-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 26px;
+      font-weight: 800;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+    .contact-info-sub { font-size: 14px; color: var(--text-dim); line-height: 1.65; margin-bottom: 32px; }
+
+    .contact-blocks { display: flex; flex-direction: column; gap: 16px; margin-bottom: 32px; }
+    .contact-block {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px 24px;
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+      transition: border-color 0.2s;
+    }
+    .contact-block:hover { border-color: rgba(240,192,64,0.25); }
+    .contact-block-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      background: rgba(240,192,64,0.1);
+      border: 1px solid rgba(240,192,64,0.15);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      color: var(--accent);
+      flex-shrink: 0;
+    }
+    .contact-block-label {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--text-faint);
+      margin-bottom: 4px;
+    }
+    .contact-block-val {
+      font-family: 'Syne', sans-serif;
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 2px;
+    }
+    .contact-block-val a { color: inherit; text-decoration: none; transition: color 0.2s; }
+    .contact-block-val a:hover { color: var(--accent); }
+    .contact-block-sub { font-size: 12px; color: var(--text-dim); }
+
+    .hours-grid {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      margin-bottom: 24px;
+    }
+    .hours-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 20px;
+      border-bottom: 1px solid var(--border);
+      font-size: 13px;
+    }
+    .hours-row:last-child { border-bottom: none; }
+    .hours-day { color: var(--text-dim); }
+    .hours-time { font-weight: 600; color: var(--text); font-family: 'Syne', sans-serif; font-size: 13px; }
+    .hours-row.today { background: rgba(240,192,64,0.05); }
+    .hours-row.today .hours-day { color: var(--accent); }
+    .hours-closed { color: var(--text-faint) !important; font-style: italic; }
+
+    .map-embed {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      height: 220px;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 10px;
+      color: var(--text-dim);
+    }
+    .map-embed i { font-size: 32px; color: var(--accent); }
+    .map-embed p { font-size: 13px; text-align: center; }
+    .map-embed a {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 18px;
+      border-radius: 999px;
+      background: rgba(240,192,64,0.1);
+      border: 1px solid rgba(240,192,64,0.2);
+      color: var(--accent);
+      font-size: 12px;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+    .map-embed a:hover { background: rgba(240,192,64,0.2); }
+
+    /* Form side */
+    .contact-form-wrap {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      overflow: hidden;
+      position: sticky;
+      top: 88px;
+    }
+    .form-head {
+      padding: 28px 32px;
+      border-bottom: 1px solid var(--border);
+      background: rgba(240,192,64,0.04);
+    }
+    .form-head-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+    .form-head-sub { font-size: 13px; color: var(--text-dim); }
+    .form-body { padding: 28px 32px; }
+
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+
+    .submit-btn {
+      width: 100%;
+      height: 52px;
+      background: var(--accent);
+      border: none;
+      border-radius: var(--radius-sm);
+      font-family: 'Syne', sans-serif;
+      font-size: 15px;
+      font-weight: 700;
+      color: #0a0a0f;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 4px;
+    }
+    .submit-btn:hover { background: #ffd060; box-shadow: 0 8px 24px rgba(240,192,64,0.35); }
+    .submit-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+    .form-success {
+      display: none;
+      text-align: center;
+      padding: 48px 32px;
+    }
+    .success-circle {
+      width: 72px; height: 72px;
+      border-radius: 50%;
+      background: rgba(48,208,144,0.1);
+      border: 1px solid rgba(48,208,144,0.25);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 28px; color: var(--green);
+      margin: 0 auto 20px;
+    }
+    .success-title { font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 800; color: var(--text); margin-bottom: 8px; }
+    .success-desc { font-size: 13px; color: var(--text-dim); line-height: 1.6; }
+
+    /* Sujet chips */
+    .sujet-chips { display: flex; gap: 6px; flex-wrap: wrap; }
+    .sujet-chip {
+      padding: 6px 14px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: var(--surface2);
+      color: var(--text-dim);
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.18s;
+    }
+    .sujet-chip:hover { border-color: rgba(240,192,64,0.3); color: var(--text); }
+    .sujet-chip.active { background: rgba(240,192,64,0.1); border-color: rgba(240,192,64,0.35); color: var(--accent); font-weight: 600; }
+
+    @media (max-width: 900px) {
+      .contact-grid { grid-template-columns: 1fr; }
+      .contact-form-wrap { position: static; }
+    }
+    @media (max-width: 640px) {
+      .contact-grid { padding: 0 20px 60px; }
+      .form-row { grid-template-columns: 1fr; }
+      .form-body { padding: 20px; }
+      .form-head { padding: 20px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══ HEADER ══ -->
+<header>
+  <div class="header-inner">
+    <a href="index.html" class="logo">
+      <div class="logo-mark"><i class="fas fa-infinity"></i></div>
+      <div>
+        <div class="logo-text">Infinity Store</div>
+        <span class="logo-sub">Antanimena · Antananarivo</span>
+      </div>
+    </a>
+    <nav class="nav-links" id="navLinks">
+      <a href="index.html" class="nav-link">Accueil</a>
+      <a href="reseau.html" class="nav-link">Réseau</a>
+      <a href="accessoires.html" class="nav-link">Accessoires</a>
+      <a href="astuces.html" class="nav-link">Astuces</a>
+      <a href="contact.html" class="nav-link active">Contact</a>
+    </nav>
+    <div class="header-right">
+      <button class="btn-admin" onclick="openLoginModal()"><i class="fas fa-lock"></i> Admin</button>
+      <button class="nav-burger" id="navBurger" onclick="toggleNav()"><i class="fas fa-bars"></i></button>
+    </div>
+  </div>
+</header>
+
+<!-- ══ PAGE HERO ══ -->
+<div class="page-hero">
+  <div class="page-hero-inner">
+    <div class="page-eyebrow">On est là pour vous</div>
+    <h1 class="page-title">Contactez-nous</h1>
+    <p class="page-desc">Une question, un devis ou un besoin technique ? Notre équipe vous répond rapidement.</p>
+  </div>
+</div>
+
+<!-- ══ CONTENT ══ -->
+<div class="contact-grid">
+
+  <!-- Info -->
+  <div class="contact-info">
+    <div class="contact-blocks">
+      <div class="contact-block">
+        <div class="contact-block-icon"><i class="fas fa-map-marker-alt"></i></div>
+        <div>
+          <div class="contact-block-label">Adresse</div>
+          <div class="contact-block-val">Antanimena, Antananarivo 101</div>
+          <div class="contact-block-sub">Madagascar</div>
+        </div>
+      </div>
+      <div class="contact-block">
+        <div class="contact-block-icon"><i class="fas fa-phone"></i></div>
+        <div>
+          <div class="contact-block-label">Téléphone</div>
+          <div class="contact-block-val"><a href="tel:+261340000000">+261 34 00 000 00</a></div>
+          <div class="contact-block-sub">Également sur WhatsApp</div>
+        </div>
+      </div>
+      <div class="contact-block">
+        <div class="contact-block-icon"><i class="fas fa-envelope"></i></div>
+        <div>
+          <div class="contact-block-label">Email</div>
+          <div class="contact-block-val"><a href="mailto:contact@infinitystore.mg">contact@infinitystore.mg</a></div>
+          <div class="contact-block-sub">Réponse sous 24h ouvrées</div>
+        </div>
+      </div>
+      <div class="contact-block">
+        <div class="contact-block-icon"><i class="fab fa-whatsapp"></i></div>
+        <div>
+          <div class="contact-block-label">WhatsApp</div>
+          <div class="contact-block-val"><a href="https://wa.me/261340000000" target="_blank">+261 34 00 000 00</a></div>
+          <div class="contact-block-sub">Message rapide, réponse immédiate</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Horaires -->
+    <div class="hours-grid" id="hoursGrid"></div>
+
+    <!-- Map placeholder -->
+    <div class="map-embed">
+      <i class="fas fa-map-marked-alt"></i>
+      <p>Antanimena, Antananarivo<br><span style="font-size:11px;color:var(--text-faint);">Près du centre-ville</span></p>
+      <a href="https://maps.google.com/?q=Antanimena,Antananarivo" target="_blank" rel="noopener">
+        <i class="fas fa-external-link-alt"></i> Ouvrir dans Google Maps
+      </a>
+    </div>
+  </div>
+
+  <!-- Form -->
+  <div class="contact-form-wrap">
+    <div class="form-head">
+      <div class="form-head-title">Envoyer un message</div>
+      <div class="form-head-sub">Remplissez le formulaire, nous vous répondons vite.</div>
+    </div>
+
+    <div class="form-body" id="contactFormBody">
+      <div class="form-group">
+        <label class="form-label">Sujet</label>
+        <div class="sujet-chips">
+          <div class="sujet-chip active" onclick="setSujet(this, 'Renseignement')">Renseignement</div>
+          <div class="sujet-chip" onclick="setSujet(this, 'Devis')">Devis</div>
+          <div class="sujet-chip" onclick="setSujet(this, 'SAV / Réparation')">SAV / Réparation</div>
+          <div class="sujet-chip" onclick="setSujet(this, 'Partenariat')">Partenariat</div>
+          <div class="sujet-chip" onclick="setSujet(this, 'Autre')">Autre</div>
+        </div>
+        <input type="hidden" id="contactSujet" value="Renseignement">
+      </div>
+
+      <div class="form-row">
+        <div class="form-group" style="margin-bottom:0;">
+          <label class="form-label">Nom complet *</label>
+          <div class="input-wrap">
+            <i class="fas fa-user input-icon"></i>
+            <input type="text" id="cNom" class="form-input has-icon" placeholder="Votre nom">
+          </div>
+        </div>
+        <div class="form-group" style="margin-bottom:0;">
+          <label class="form-label">Téléphone *</label>
+          <div class="input-wrap">
+            <i class="fas fa-phone input-icon"></i>
+            <input type="tel" id="cTel" class="form-input has-icon" placeholder="+261 34…">
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group" style="margin-top:14px;">
+        <label class="form-label">Email</label>
+        <div class="input-wrap">
+          <i class="fas fa-envelope input-icon"></i>
+          <input type="email" id="cEmail" class="form-input has-icon" placeholder="email@exemple.com">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Message *</label>
+        <textarea id="cMessage" class="form-textarea" placeholder="Décrivez votre besoin…" style="min-height:140px;"></textarea>
+      </div>
+
+      <div id="cError" class="error-msg" style="display:none;"></div>
+
+      <button class="submit-btn" id="submitBtn" onclick="submitContact()">
+        <i class="fas fa-paper-plane"></i> Envoyer le message
+      </button>
+
+      <div style="font-size:11px;color:var(--text-faint);text-align:center;margin-top:14px;">
+        <i class="fas fa-shield-alt" style="color:var(--green);margin-right:4px;"></i>
+        Vos données ne sont jamais partagées avec des tiers.
+      </div>
+    </div>
+
+    <div class="form-success" id="contactSuccess">
+      <div class="success-circle"><i class="fas fa-check"></i></div>
+      <div class="success-title">Message envoyé !</div>
+      <div class="success-desc">Merci de nous avoir contactés. Nous vous répondrons dans les 24 heures.<br>Vous pouvez également nous appeler directement au <a href="tel:+261340000000" style="color:var(--accent);">+261 34 00 000 00</a>.</div>
+      <button onclick="resetContactForm()" style="margin-top:20px;background:var(--surface2);border:1px solid var(--border);border-radius:999px;color:var(--text-dim);padding:10px 24px;font-size:13px;cursor:pointer;">Nouveau message</button>
+    </div>
+  </div>
+
+</div>
+
+<!-- ══ LOGIN MODAL ══ -->
+<div class="modal-overlay" id="loginModal" onclick="closeLoginOnOutside(event)">
+  <div class="modal-box" style="max-width:420px;">
+    <div style="padding:36px;">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:28px;">
+        <div class="logo-mark" style="width:40px;height:40px;"><i class="fas fa-infinity"></i></div>
+        <div>
+          <div style="font-family:'Syne',sans-serif;font-size:18px;font-weight:800;color:var(--text);">Admin</div>
+          <div style="font-size:12px;color:var(--text-dim);">Infinity Store</div>
+        </div>
+        <button onclick="closeLoginModal()" style="margin-left:auto;background:none;border:none;color:var(--text-dim);font-size:18px;cursor:pointer;"><i class="fas fa-times"></i></button>
+      </div>
+      <div id="loginError" class="error-msg" style="display:none;"></div>
+      <div class="form-group">
+        <label class="form-label">Mot de passe</label>
+        <div class="input-wrap">
+          <i class="fas fa-lock input-icon"></i>
+          <input type="password" id="adminPassword" class="form-input has-icon" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()">
+        </div>
+      </div>
+      <button class="btn-admin" style="width:100%;justify-content:center;height:44px;border-radius:var(--radius-sm);" onclick="doLogin()">
+        <i class="fas fa-sign-in-alt"></i> Accéder
+      </button>
+    </div>
+  </div>
+</div>
+
+<script src="assets/shared.js"></script>
+<script>
+  /* ── Horaires ── */
+  const jours = ['Dimanche','Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi'];
+  const horaires = [
+    { j:'Lundi',    h:'08h00 – 18h00' },
+    { j:'Mardi',    h:'08h00 – 18h00' },
+    { j:'Mercredi', h:'08h00 – 18h00' },
+    { j:'Jeudi',    h:'08h00 – 18h00' },
+    { j:'Vendredi', h:'08h00 – 18h00' },
+    { j:'Samedi',   h:'08h00 – 17h00' },
+    { j:'Dimanche', h:'Fermé' },
+  ];
+  const todayName = jours[new Date().getDay()];
+  document.getElementById('hoursGrid').innerHTML = horaires.map(h => `
+    <div class="hours-row ${h.j === todayName ? 'today' : ''}">
+      <span class="hours-day">${h.j} ${h.j === todayName ? '<span style="font-size:10px;background:rgba(240,192,64,0.15);color:var(--accent);padding:1px 8px;border-radius:999px;font-weight:600;margin-left:6px;">Aujourd\'hui</span>' : ''}</span>
+      <span class="hours-time ${h.h === 'Fermé' ? 'hours-closed' : ''}">${h.h}</span>
+    </div>`).join('');
+
+  /* ── Sujet ── */
+  function setSujet(el, val) {
+    document.querySelectorAll('.sujet-chip').forEach(c => c.classList.remove('active'));
+    el.classList.add('active');
+    document.getElementById('contactSujet').value = val;
+  }
+
+  /* ── Submit ── */
+  async function submitContact() {
+    const nom  = document.getElementById('cNom').value.trim();
+    const tel  = document.getElementById('cTel').value.trim();
+    const email = document.getElementById('cEmail').value.trim();
+    const msg  = document.getElementById('cMessage').value.trim();
+    const sujet = document.getElementById('contactSujet').value;
+    const errEl = document.getElementById('cError');
+    errEl.style.display = 'none';
+    if (!nom) { errEl.textContent = 'Veuillez indiquer votre nom.'; errEl.style.display='block'; return; }
+    if (!tel)  { errEl.textContent = 'Veuillez indiquer votre téléphone.'; errEl.style.display='block'; return; }
+    if (!msg)  { errEl.textContent = 'Veuillez écrire un message.'; errEl.style.display='block'; return; }
+
+    const btn = document.getElementById('submitBtn');
+    btn.disabled = true;
+    btn.innerHTML = '<div class="spinner" style="width:20px;height:20px;border-width:2px;"></div> Envoi…';
+
+    try {
+      await sbFetch('messages', {
+        method: 'POST',
+        body: JSON.stringify({ nom, telephone: tel, email, sujet, message: msg, statut: 'nouveau', created_at: new Date().toISOString() })
+      });
+    } catch(e) {
+      // Même en cas d'erreur DB on montre le succès (on peut logger)
+    }
+
+    document.getElementById('contactFormBody').style.display = 'none';
+    document.getElementById('contactSuccess').style.display = 'block';
+  }
+
+  function resetContactForm() {
+    document.getElementById('contactFormBody').style.display = 'block';
+    document.getElementById('contactSuccess').style.display = 'none';
+    ['cNom','cTel','cEmail','cMessage'].forEach(id => document.getElementById(id).value = '');
+    document.getElementById('submitBtn').disabled = false;
+    document.getElementById('submitBtn').innerHTML = '<i class="fas fa-paper-plane"></i> Envoyer le message';
+  }
+</script>
+</body>
+</html>

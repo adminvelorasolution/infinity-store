@@ -1,0 +1,1031 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Infinity Store — Informatique & Réseau · Antananarivo</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/shared.css">
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+  <link rel="manifest" href="/site.webmanifest">
+  <style>
+    /* ── HERO ── */
+    .hero {
+      position: relative;
+      min-height: 540px;
+      display: flex;
+      align-items: center;
+      overflow: hidden;
+      padding: 80px 0;
+    }
+    .hero-bg {
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 70% 60% at 70% 50%, rgba(240,192,64,0.08) 0%, transparent 65%),
+        radial-gradient(ellipse 40% 40% at 20% 80%, rgba(224,120,48,0.05) 0%, transparent 60%);
+    }
+    .hero-grid {
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(240,192,64,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(240,192,64,0.03) 1px, transparent 1px);
+      background-size: 48px 48px;
+      pointer-events: none;
+    }
+    .hero-inner {
+      position: relative;
+      z-index: 1;
+      max-width: 1600px;
+      margin: 0 auto;
+      padding: 0 40px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 80px;
+      align-items: center;
+    }
+    .hero-eyebrow {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .hero-eyebrow::before {
+      content: '';
+      width: 24px;
+      height: 1px;
+      background: var(--accent);
+    }
+    .hero-title {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(40px, 5vw, 68px);
+      font-weight: 800;
+      line-height: 1.05;
+      color: var(--text);
+      letter-spacing: -1px;
+      margin-bottom: 20px;
+    }
+    .hero-title span { color: var(--accent); }
+    .hero-desc {
+      font-size: 16px;
+      color: var(--text-dim);
+      line-height: 1.7;
+      max-width: 460px;
+      margin-bottom: 36px;
+    }
+    .hero-actions { display: flex; gap: 12px; flex-wrap: wrap; }
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 14px 28px;
+      background: var(--accent);
+      color: #0a0a0f;
+      border-radius: 999px;
+      font-family: 'Syne', sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      text-decoration: none;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-primary:hover {
+      background: #ffd060;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 28px rgba(240,192,64,0.4);
+    }
+    .btn-outline {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 14px 28px;
+      background: transparent;
+      color: var(--text);
+      border-radius: 999px;
+      font-family: 'Syne', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      text-decoration: none;
+      border: 1px solid var(--border);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-outline:hover {
+      border-color: rgba(240,192,64,0.4);
+      background: rgba(240,192,64,0.06);
+    }
+    /* hero stats */
+    .hero-stats {
+      display: flex;
+      gap: 32px;
+      margin-top: 48px;
+      padding-top: 32px;
+      border-top: 1px solid var(--border);
+    }
+    .hstat-val {
+      font-family: 'Syne', sans-serif;
+      font-size: 32px;
+      font-weight: 800;
+      color: var(--text);
+    }
+    .hstat-val span { color: var(--accent); }
+    .hstat-label { font-size: 12px; color: var(--text-dim); margin-top: 2px; }
+    /* hero visual */
+    .hero-visual {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    .hero-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 24px;
+      transition: all 0.3s;
+    }
+    .hero-card:hover {
+      border-color: rgba(240,192,64,0.25);
+      transform: translateY(-4px);
+      box-shadow: 0 16px 40px rgba(0,0,0,0.4);
+    }
+    .hero-card.large {
+      grid-column: span 2;
+      display: flex;
+      align-items: center;
+      gap: 24px;
+    }
+    .hcard-icon {
+      width: 52px;
+      height: 52px;
+      border-radius: 14px;
+      background: rgba(240,192,64,0.12);
+      border: 1px solid rgba(240,192,64,0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      color: var(--accent);
+      flex-shrink: 0;
+    }
+    .hcard-name {
+      font-family: 'Syne', sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+    .hcard-sub { font-size: 12px; color: var(--text-dim); }
+    .hcard-price {
+      font-family: 'Syne', sans-serif;
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--accent);
+      margin-top: 16px;
+    }
+    .hcard-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 3px 10px;
+      border-radius: 999px;
+      font-size: 10px;
+      font-weight: 600;
+      background: rgba(48,208,144,0.15);
+      color: var(--green);
+      border: 1px solid rgba(48,208,144,0.2);
+      margin-top: 8px;
+    }
+
+    /* ── SECTION GENERIQUE ── */
+    .section {
+      max-width: 1600px;
+      margin: 0 auto;
+      padding: 80px 40px;
+    }
+    .section + .section { padding-top: 0; }
+    .section-header {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      margin-bottom: 40px;
+      gap: 20px;
+    }
+    .section-eyebrow {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 8px;
+    }
+    .section-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 32px;
+      font-weight: 800;
+      color: var(--text);
+      letter-spacing: -0.5px;
+    }
+    .see-all {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      color: var(--accent);
+      text-decoration: none;
+      font-weight: 600;
+      transition: gap 0.2s;
+      white-space: nowrap;
+    }
+    .see-all:hover { gap: 12px; }
+
+    /* ── PRODUITS À LA UNE ── */
+    .featured-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 20px;
+    }
+    .product-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      cursor: pointer;
+      transition: transform 0.22s cubic-bezier(.22,.68,0,1.2), border-color 0.2s, box-shadow 0.22s;
+      display: flex;
+      flex-direction: column;
+    }
+    .product-card:hover {
+      transform: translateY(-4px);
+      border-color: rgba(240,192,64,0.25);
+      box-shadow: 0 16px 40px rgba(0,0,0,0.5);
+    }
+    .card-image {
+      width: 100%;
+      aspect-ratio: 4/3;
+      background: var(--surface2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      position: relative;
+    }
+    .card-image img { width:100%; height:100%; object-fit: cover; transition: transform 0.3s; }
+    .product-card:hover .card-image img { transform: scale(1.04); }
+    .card-image-icon { color: var(--text-faint); font-size: 40px; }
+    .card-badge {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      padding: 3px 10px;
+      border-radius: 999px;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+    .badge-promo { background: var(--red); color: #fff; }
+    .badge-new { background: var(--accent); color: #0a0a0f; }
+    .badge-hot { background: var(--accent2); color: #fff; }
+    .card-body { padding: 18px; flex: 1; display: flex; flex-direction: column; }
+    .card-category {
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 6px;
+    }
+    .card-name {
+      font-family: 'Syne', sans-serif;
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text);
+      line-height: 1.3;
+      margin-bottom: 12px;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .card-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: auto;
+    }
+    .card-price {
+      font-family: 'Syne', sans-serif;
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--accent);
+    }
+    .card-price-old {
+      font-size: 12px;
+      color: var(--text-faint);
+      text-decoration: line-through;
+      margin-left: 4px;
+    }
+    .card-btn {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: rgba(240,192,64,0.1);
+      border: 1px solid rgba(240,192,64,0.2);
+      color: var(--accent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .card-btn:hover { background: var(--accent); color: #0a0a0f; }
+
+    /* ── PROMOTIONS BANNER ── */
+    .promo-banner {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 40px 48px;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: center;
+      gap: 32px;
+      position: relative;
+      overflow: hidden;
+    }
+    .promo-banner::before {
+      content: '';
+      position: absolute;
+      right: -40px;
+      top: -40px;
+      width: 300px;
+      height: 300px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(240,192,64,0.08) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .promo-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 14px;
+      border-radius: 999px;
+      background: rgba(240,80,96,0.15);
+      border: 1px solid rgba(240,80,96,0.25);
+      color: var(--red);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-bottom: 16px;
+    }
+    .promo-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 28px;
+      font-weight: 800;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+    .promo-sub { font-size: 14px; color: var(--text-dim); }
+    .promo-countdown {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+    .countdown-block {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px 20px;
+      text-align: center;
+      min-width: 70px;
+    }
+    .countdown-val {
+      font-family: 'Syne', sans-serif;
+      font-size: 28px;
+      font-weight: 800;
+      color: var(--accent);
+      line-height: 1;
+    }
+    .countdown-unit { font-size: 10px; color: var(--text-faint); letter-spacing: 1px; text-transform: uppercase; margin-top: 4px; }
+    .countdown-sep { font-family: 'Syne', sans-serif; font-size: 24px; font-weight: 700; color: var(--text-faint); }
+
+    /* ── SERVICES ── */
+    .services-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+    .service-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 32px;
+      transition: all 0.2s;
+    }
+    .service-card:hover {
+      border-color: rgba(240,192,64,0.25);
+      transform: translateY(-3px);
+    }
+    .service-icon {
+      width: 52px;
+      height: 52px;
+      border-radius: 14px;
+      background: rgba(240,192,64,0.1);
+      border: 1px solid rgba(240,192,64,0.15);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      color: var(--accent);
+      margin-bottom: 20px;
+    }
+    .service-name {
+      font-family: 'Syne', sans-serif;
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 10px;
+    }
+    .service-desc { font-size: 13px; color: var(--text-dim); line-height: 1.6; }
+
+    /* ── A PROPOS STRIP ── */
+    .about-strip {
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+    .about-inner {
+      max-width: 1600px;
+      margin: 0 auto;
+      padding: 60px 40px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 80px;
+      align-items: center;
+    }
+    .about-text h2 {
+      font-family: 'Syne', sans-serif;
+      font-size: 36px;
+      font-weight: 800;
+      color: var(--text);
+      margin-bottom: 16px;
+      letter-spacing: -0.5px;
+    }
+    .about-text p {
+      font-size: 15px;
+      color: var(--text-dim);
+      line-height: 1.75;
+      margin-bottom: 12px;
+    }
+    .about-pills {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 24px;
+    }
+    .about-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 14px;
+      border-radius: 999px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      font-size: 12px;
+      color: var(--text-dim);
+    }
+    .about-pill i { color: var(--accent); font-size: 11px; }
+    .about-map {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      height: 280px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      color: var(--text-dim);
+      font-size: 14px;
+      position: relative;
+      overflow: hidden;
+    }
+    .about-map i { font-size: 36px; color: var(--accent); }
+    .about-map-pin {
+      font-family: 'Syne', sans-serif;
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text);
+    }
+    .about-map-sub { font-size: 12px; color: var(--text-faint); }
+    .map-link {
+      margin-top: 8px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      color: var(--accent);
+      text-decoration: none;
+    }
+    .map-link:hover { text-decoration: underline; }
+
+    /* ── FOOTER ── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 48px 40px 32px;
+    }
+    .footer-inner {
+      max-width: 1600px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr 1fr;
+      gap: 48px;
+      margin-bottom: 40px;
+    }
+    .footer-logo { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; text-decoration: none; }
+    .footer-desc { font-size: 13px; color: var(--text-dim); line-height: 1.7; max-width: 280px; }
+    .footer-social { display: flex; gap: 8px; margin-top: 20px; }
+    .social-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-dim);
+      font-size: 14px;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+    .social-btn:hover { border-color: rgba(240,192,64,0.3); color: var(--accent); }
+    .footer-col-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text);
+      letter-spacing: 0.5px;
+      margin-bottom: 16px;
+    }
+    .footer-links { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+    .footer-links a {
+      font-size: 13px;
+      color: var(--text-dim);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .footer-links a:hover { color: var(--accent); }
+    .footer-bottom {
+      max-width: 1600px;
+      margin: 0 auto;
+      padding-top: 24px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .footer-copy { font-size: 12px; color: var(--text-faint); }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 1200px) {
+      .featured-grid { grid-template-columns: repeat(3, 1fr); }
+      .footer-inner { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 992px) {
+      .hero-inner { grid-template-columns: 1fr; gap: 40px; }
+      .hero-visual { display: none; }
+      .services-grid { grid-template-columns: 1fr 1fr; }
+      .about-inner { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 768px) {
+      .section { padding: 48px 20px; }
+      .featured-grid { grid-template-columns: repeat(2, 1fr); gap: 14px; }
+      .services-grid { grid-template-columns: 1fr; }
+      .promo-banner { grid-template-columns: 1fr; }
+      .promo-countdown { justify-content: flex-start; }
+      .hero-stats { gap: 20px; }
+      .footer-inner { grid-template-columns: 1fr 1fr; gap: 28px; }
+    }
+    @media (max-width: 480px) {
+      .featured-grid { grid-template-columns: 1fr; }
+      .hero-stats { flex-wrap: wrap; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══ HEADER ══ -->
+<header id="mainHeader">
+  <div class="header-inner">
+    <a href="index.html" class="logo">
+      <div class="logo-mark"><i class="fas fa-infinity"></i></div>
+      <div>
+        <div class="logo-text">Infinity Store</div>
+        <span class="logo-sub">Antanimena · Antananarivo</span>
+      </div>
+    </a>
+
+    <nav class="nav-links" id="navLinks">
+      <a href="index.html" class="nav-link active">Accueil</a>
+      <a href="reseau.html" class="nav-link">Réseau</a>
+      <a href="accessoires.html" class="nav-link">Accessoires</a>
+      <a href="astuces.html" class="nav-link">Astuces</a>
+      <a href="contact.html" class="nav-link">Contact</a>
+    </nav>
+
+    <div class="header-right">
+      <a href="contact.html" class="header-contact-btn">
+        <i class="fas fa-phone"></i>
+        <span>Nous contacter</span>
+      </a>
+      <button class="btn-admin" onclick="openLoginModal()">
+        <i class="fas fa-lock"></i>
+        Admin
+      </button>
+      <button class="nav-burger" id="navBurger" onclick="toggleNav()">
+        <i class="fas fa-bars"></i>
+      </button>
+    </div>
+  </div>
+</header>
+
+<!-- ══ HERO ══ -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+  <div class="hero-inner">
+    <div>
+      <div class="hero-eyebrow">Votre partenaire tech à Madagascar</div>
+      <h1 class="hero-title">
+        L'informatique<br>
+        sans <span>limites</span>
+      </h1>
+      <p class="hero-desc">
+        Ordinateurs, équipements réseau, accessoires et services de qualité.
+        Infinity Store vous accompagne à Antanimena, Antananarivo.
+      </p>
+      <div class="hero-actions">
+        <a href="accessoires.html" class="btn-primary">
+          <i class="fas fa-shopping-bag"></i>
+          Voir nos produits
+        </a>
+        <a href="reseau.html" class="btn-outline">
+          <i class="fas fa-wifi"></i>
+          Solutions réseau
+        </a>
+      </div>
+      <div class="hero-stats">
+        <div>
+          <div class="hstat-val">500<span>+</span></div>
+          <div class="hstat-label">Produits disponibles</div>
+        </div>
+        <div>
+          <div class="hstat-val">5<span>+</span></div>
+          <div class="hstat-label">Années d'expérience</div>
+        </div>
+        <div>
+          <div class="hstat-val">1K<span>+</span></div>
+          <div class="hstat-label">Clients satisfaits</div>
+        </div>
+      </div>
+    </div>
+    <div class="hero-visual">
+      <div class="hero-card large">
+        <div class="hcard-icon"><i class="fas fa-laptop"></i></div>
+        <div>
+          <div class="hcard-name">Laptop HP EliteBook 840</div>
+          <div class="hcard-sub">Intel Core i7 · 16GB RAM · SSD 512GB</div>
+          <div class="hcard-price">1 850 000 Ar</div>
+          <div class="hcard-badge"><i class="fas fa-circle" style="font-size:6px;"></i> En stock</div>
+        </div>
+      </div>
+      <div class="hero-card">
+        <div class="hcard-icon"><i class="fas fa-wifi"></i></div>
+        <div class="hcard-name">Routeur MikroTik</div>
+        <div class="hcard-sub">hAP ac³</div>
+        <div class="hcard-price">320 000 Ar</div>
+      </div>
+      <div class="hero-card">
+        <div class="hcard-icon"><i class="fas fa-desktop"></i></div>
+        <div class="hcard-name">Écran Dell 24"</div>
+        <div class="hcard-sub">Full HD · IPS</div>
+        <div class="hcard-price">480 000 Ar</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ PROMOTIONS ══ -->
+<div style="max-width:1600px;margin:0 auto;padding:0 40px;">
+  <div class="promo-banner">
+    <div>
+      <div class="promo-tag"><i class="fas fa-bolt"></i> Offre spéciale</div>
+      <div class="promo-title">Soldes d'hiver — jusqu'à 30% de réduction</div>
+      <div class="promo-sub">Sur une sélection de laptops, écrans et accessoires. Offre limitée.</div>
+      <div style="margin-top:20px;">
+        <a href="accessoires.html?promo=1" class="btn-primary" style="display:inline-flex;">
+          <i class="fas fa-tag"></i> Voir les offres
+        </a>
+      </div>
+    </div>
+    <div class="promo-countdown" id="promoCountdown">
+      <div class="countdown-block">
+        <div class="countdown-val" id="cdDays">02</div>
+        <div class="countdown-unit">Jours</div>
+      </div>
+      <div class="countdown-sep">:</div>
+      <div class="countdown-block">
+        <div class="countdown-val" id="cdHours">14</div>
+        <div class="countdown-unit">Heures</div>
+      </div>
+      <div class="countdown-sep">:</div>
+      <div class="countdown-block">
+        <div class="countdown-val" id="cdMins">37</div>
+        <div class="countdown-unit">Min</div>
+      </div>
+      <div class="countdown-sep">:</div>
+      <div class="countdown-block">
+        <div class="countdown-val" id="cdSecs">00</div>
+        <div class="countdown-unit">Sec</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ PRODUITS À LA UNE ══ -->
+<section class="section">
+  <div class="section-header">
+    <div>
+      <div class="section-eyebrow">Sélection</div>
+      <div class="section-title">Produits à la une</div>
+    </div>
+    <a href="accessoires.html" class="see-all">Tout voir <i class="fas fa-arrow-right"></i></a>
+  </div>
+  <div class="featured-grid" id="featuredGrid">
+    <!-- Loaded by JS or hardcoded samples -->
+    <div class="product-card" onclick="openProductModal(this)">
+      <div class="card-image">
+        <div class="card-image-icon"><i class="fas fa-laptop"></i></div>
+        <span class="card-badge badge-hot">Populaire</span>
+      </div>
+      <div class="card-body">
+        <div class="card-category">Laptop</div>
+        <div class="card-name">Lenovo ThinkPad E14 Gen 4</div>
+        <div class="card-footer">
+          <div>
+            <div class="card-price">1 450 000 Ar</div>
+          </div>
+          <button class="card-btn"><i class="fas fa-arrow-right"></i></button>
+        </div>
+      </div>
+    </div>
+    <div class="product-card" onclick="openProductModal(this)">
+      <div class="card-image">
+        <div class="card-image-icon"><i class="fas fa-keyboard"></i></div>
+        <span class="card-badge badge-promo">-20%</span>
+      </div>
+      <div class="card-body">
+        <div class="card-category">Accessoire</div>
+        <div class="card-name">Clavier mécanique Logitech MX Keys</div>
+        <div class="card-footer">
+          <div>
+            <div class="card-price">165 000 Ar <span class="card-price-old">205 000</span></div>
+          </div>
+          <button class="card-btn"><i class="fas fa-arrow-right"></i></button>
+        </div>
+      </div>
+    </div>
+    <div class="product-card" onclick="openProductModal(this)">
+      <div class="card-image">
+        <div class="card-image-icon"><i class="fas fa-wifi"></i></div>
+        <span class="card-badge badge-new">Nouveau</span>
+      </div>
+      <div class="card-body">
+        <div class="card-category">Réseau</div>
+        <div class="card-name">MikroTik hAP ax³ WiFi 6</div>
+        <div class="card-footer">
+          <div>
+            <div class="card-price">420 000 Ar</div>
+          </div>
+          <button class="card-btn"><i class="fas fa-arrow-right"></i></button>
+        </div>
+      </div>
+    </div>
+    <div class="product-card" onclick="openProductModal(this)">
+      <div class="card-image">
+        <div class="card-image-icon"><i class="fas fa-memory"></i></div>
+      </div>
+      <div class="card-body">
+        <div class="card-category">Composant</div>
+        <div class="card-name">RAM Crucial 16GB DDR4 3200MHz</div>
+        <div class="card-footer">
+          <div>
+            <div class="card-price">95 000 Ar</div>
+          </div>
+          <button class="card-btn"><i class="fas fa-arrow-right"></i></button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ SERVICES ══ -->
+<section class="section" style="padding-top:0;">
+  <div class="section-header">
+    <div>
+      <div class="section-eyebrow">Ce qu'on fait</div>
+      <div class="section-title">Nos services</div>
+    </div>
+  </div>
+  <div class="services-grid">
+    <div class="service-card">
+      <div class="service-icon"><i class="fas fa-tools"></i></div>
+      <div class="service-name">Réparation & Maintenance</div>
+      <div class="service-desc">Diagnostic, réparation hardware/software, nettoyage et optimisation de vos équipements informatiques.</div>
+    </div>
+    <div class="service-card">
+      <div class="service-icon"><i class="fas fa-network-wired"></i></div>
+      <div class="service-name">Installation Réseau</div>
+      <div class="service-desc">Conception et déploiement de réseaux LAN/WLAN pour entreprises, bureaux et domiciles.</div>
+    </div>
+    <div class="service-card">
+      <div class="service-icon"><i class="fas fa-laptop-code"></i></div>
+      <div class="service-name">Vente de matériel</div>
+      <div class="service-desc">Ordinateurs neufs et reconditionnés, périphériques, équipements réseau et accessoires de qualité.</div>
+    </div>
+    <div class="service-card">
+      <div class="service-icon"><i class="fas fa-shield-alt"></i></div>
+      <div class="service-name">Cybersécurité</div>
+      <div class="service-desc">Mise en place de solutions de sécurité, antivirus, pare-feu et protection de données.</div>
+    </div>
+    <div class="service-card">
+      <div class="service-icon"><i class="fas fa-cloud"></i></div>
+      <div class="service-name">Cloud & Sauvegarde</div>
+      <div class="service-desc">Configuration de solutions de sauvegarde, NAS et synchronisation cloud pour votre business.</div>
+    </div>
+    <div class="service-card">
+      <div class="service-icon"><i class="fas fa-graduation-cap"></i></div>
+      <div class="service-name">Formation</div>
+      <div class="service-desc">Formations informatiques personnalisées : utilisation de logiciels, réseau, sécurité et plus.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ À PROPOS ══ -->
+<div class="about-strip">
+  <div class="about-inner">
+    <div class="about-text">
+      <div class="section-eyebrow">À propos</div>
+      <h2>Votre boutique tech de confiance</h2>
+      <p>
+        Depuis plus de 5 ans, Infinity Store est votre partenaire informatique à Antanimena, Antananarivo.
+        Nous proposons une gamme complète de matériels informatiques, d'équipements réseau et de services techniques.
+      </p>
+      <p>
+        Notre équipe de techniciens qualifiés est à votre disposition pour vous conseiller, réparer vos équipements
+        et déployer vos infrastructures réseau.
+      </p>
+      <div class="about-pills">
+        <div class="about-pill"><i class="fas fa-check"></i> Matériel garanti</div>
+        <div class="about-pill"><i class="fas fa-check"></i> Techniciens certifiés</div>
+        <div class="about-pill"><i class="fas fa-check"></i> SAV réactif</div>
+        <div class="about-pill"><i class="fas fa-check"></i> Devis gratuit</div>
+        <div class="about-pill"><i class="fas fa-check"></i> Livraison Tana</div>
+      </div>
+    </div>
+    <div class="about-map">
+      <i class="fas fa-map-marker-alt"></i>
+      <div class="about-map-pin">En face Skatepark Antanimena, Antananarivo</div>
+      <div class="about-map-sub">En face Skatepark Antanimena, Antananarivo 101</div>
+      <div class="about-map-sub">Lun–Sam · 8h00–17h00</div>
+      <a href="contact.html" class="map-link">
+        <i class="fas fa-directions"></i> Voir comment venir
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- ══ FOOTER ══ -->
+<footer>
+  <div class="footer-inner">
+    <div>
+      <a href="index.html" class="footer-logo">
+        <div class="logo-mark" style="width:36px;height:36px;font-size:14px;"><i class="fas fa-infinity"></i></div>
+        <div>
+          <div class="logo-text">Infinity Store</div>
+          <span class="logo-sub">Antanimena · Antananarivo</span>
+        </div>
+      </a>
+      <div class="footer-desc">Votre boutique informatique de confiance à Madagascar. Matériel, réseau, accessoires et services.</div>
+      <div class="footer-social">
+        <a href="#" class="social-btn"><i class="fab fa-facebook-f"></i></a>
+        <a href="#" class="social-btn"><i class="fab fa-whatsapp"></i></a>
+        <a href="#" class="social-btn"><i class="fab fa-linkedin-in"></i></a>
+      </div>
+    </div>
+    <div>
+      <div class="footer-col-title">Navigation</div>
+      <ul class="footer-links">
+        <li><a href="index.html">Accueil</a></li>
+        <li><a href="reseau.html">Réseau</a></li>
+        <li><a href="accessoires.html">Accessoires</a></li>
+        <li><a href="astuces.html">Astuces & Tutoriels</a></li>
+        <li><a href="contact.html">Contact</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="footer-col-title">Services</div>
+      <ul class="footer-links">
+        <li><a href="#">Réparation PC</a></li>
+        <li><a href="reseau.html">Installation réseau</a></li>
+        <li><a href="#">Maintenance</a></li>
+        <li><a href="reseau.html#devis">Demande de devis</a></li>
+        <li><a href="#">Formation</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="footer-col-title">Contact</div>
+      <ul class="footer-links">
+        <li><a href="tel:+261340120396"><i class="fas fa-phone fa-xs"></i> +261 34 01 203 96</a></li>
+        <li><a href="mailto:infinitystoremada@gmail.com"><i class="fas fa-envelope fa-xs"></i> infinitystoremada@gmail.com</a></li>
+        <li><a href="#"><i class="fas fa-map-marker-alt fa-xs"></i> En face Skatepark Antanimena, Antananarivo</a></li>
+        <li><a href="#"><i class="fas fa-clock fa-xs"></i> Lun–Sam 8h–17h</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <div class="footer-copy">© 2026 Infinity Store. Tous droits réservés.</div>
+    <div class="footer-copy">Made with <i class="fas fa-heart" style="color:var(--red);font-size:10px;"></i> à Antananarivo</div>
+  </div>
+</footer>
+
+<!-- ══ LOGIN MODAL ══ -->
+<div class="modal-overlay" id="loginModal" onclick="closeLoginOnOutside(event)">
+  <div class="modal-box" style="max-width:420px;">
+    <div style="padding:36px;">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:28px;">
+        <div class="logo-mark" style="width:40px;height:40px;"><i class="fas fa-infinity"></i></div>
+        <div>
+          <div style="font-family:'Syne',sans-serif;font-size:18px;font-weight:800;color:var(--text);">Admin Panel</div>
+          <div style="font-size:12px;color:var(--text-dim);">Infinity Store</div>
+        </div>
+        <button onclick="closeLoginModal()" style="margin-left:auto;background:none;border:none;color:var(--text-dim);font-size:18px;cursor:pointer;"><i class="fas fa-times"></i></button>
+      </div>
+      <div id="loginError" class="error-msg" style="display:none;"></div>
+      <div class="form-group">
+        <label class="form-label">Mot de passe admin</label>
+        <div class="input-wrap">
+          <i class="fas fa-lock input-icon"></i>
+          <input type="password" id="adminPassword" class="form-input" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()">
+        </div>
+      </div>
+      <button class="btn-primary" style="width:100%;justify-content:center;margin-top:20px;" onclick="doLogin()">
+        <i class="fas fa-sign-in-alt"></i> Accéder au panneau admin
+      </button>
+      <div style="font-size:11px;color:var(--text-faint);text-align:center;margin-top:16px;">
+        Accès réservé au personnel Infinity Store
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="assets/shared.js"></script>
+<script>
+  /* ── Countdown ── */
+  (function() {
+    const end = new Date();
+    end.setDate(end.getDate() + 2);
+    end.setHours(end.getHours() + 14, 37, 0, 0);
+    function tick() {
+      const diff = end - Date.now();
+      if (diff <= 0) return;
+      const d = Math.floor(diff / 86400000);
+      const h = Math.floor((diff % 86400000) / 3600000);
+      const m = Math.floor((diff % 3600000) / 60000);
+      const s = Math.floor((diff % 60000) / 1000);
+      document.getElementById('cdDays').textContent = String(d).padStart(2,'0');
+      document.getElementById('cdHours').textContent = String(h).padStart(2,'0');
+      document.getElementById('cdMins').textContent = String(m).padStart(2,'0');
+      document.getElementById('cdSecs').textContent = String(s).padStart(2,'0');
+    }
+    tick();
+    setInterval(tick, 1000);
+  })();
+</script>
+</body>
+</html>
